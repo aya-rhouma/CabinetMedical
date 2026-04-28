@@ -1,4 +1,36 @@
 package com.jee.ejb.interfaces;
 
-public class PatientServiceLocal {
+import com.jee.entity.CertificatMedical;
+import com.jee.entity.Medecin;
+import com.jee.entity.RendezVous;
+import jakarta.ejb.Local;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+@Local
+public interface PatientServiceLocal {
+
+    List<RendezVous> getRendezVousPlanifies(int patientId);
+
+    List<RendezVous> getRendezVousPasses(int patientId);
+
+    RendezVous getRendezVousById(int patientId, int rendezVousId);
+
+    RendezVous reserverRendezVous(int patientId, int medecinId, LocalDate date, LocalTime heureDebut, LocalTime heureFin);
+
+    RendezVous annulerRendezVous(int patientId, int rendezVousId);
+
+    RendezVous modifierHoraireRendezVous(int patientId, int rendezVousId, LocalDate date, LocalTime heureDebut, LocalTime heureFin);
+
+    List<Medecin> getMedecinsBySpecialite(String specialite);
+
+    List<Medecin> getMedecinsDisponibles(String specialite, LocalDate date, LocalTime heureDebut, LocalTime heureFin);
+
+    CertificatMedical demanderCertificat(int patientId, int medecinId, String motif);
+
+    List<CertificatMedical> getDemandesCertificats(int patientId);
+
+    List<String> consumeNotifications(int patientId);
 }
