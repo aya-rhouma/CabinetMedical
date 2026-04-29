@@ -29,7 +29,7 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(180deg, #eff8ff 0%, #f8fbff 30%, #ffffff 100%);
     color: var(--dark);
     line-height: 1.6;
     overflow-x: hidden;
@@ -38,23 +38,23 @@ body {
 }
 
 .container {
-    max-width: 1400px;
+    max-width: 1600px;
     width: 100%;
     margin: 0 auto;
-    padding: 0 2rem;
+    padding: 0 3rem;
 }
 
 /* ============================================
    NAVIGATION
    ============================================ */
 .navbar {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    box-shadow: var(--shadow);
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
     position: sticky;
     top: 0;
     z-index: 1000;
-    padding: 1rem 0;
+    padding: 0;
     transition: var(--transition);
     width: 100%;
     left: 0;
@@ -62,20 +62,21 @@ body {
 }
 
 .nav-container {
-    max-width: 1400px;
+    max-width: 1700px;
     width: 100%;
     margin: 0 auto;
-    padding: 0 2rem;
+    padding: 0 3rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    min-height: 90px;
 }
 
 .logo {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 1.8rem;
+    gap: 16px;
+    font-size: 2.35rem;
     font-weight: 800;
     background: linear-gradient(135deg, var(--primary), var(--secondary));
     -webkit-background-clip: text;
@@ -88,11 +89,12 @@ body {
     -webkit-background-clip: unset;
     background-clip: unset;
     color: var(--primary);
+    font-size: 2rem;
 }
 
 .nav-links {
     display: flex;
-    gap: 2rem;
+    gap: 2.25rem;
     align-items: center;
 }
 
@@ -100,8 +102,10 @@ body {
     text-decoration: none;
     color: var(--gray);
     font-weight: 500;
+    font-size: 1.1rem;
     transition: var(--transition);
     position: relative;
+    padding: 0.6rem 0;
 }
 
 .nav-links a::after {
@@ -127,14 +131,16 @@ body {
 .btn-login {
     background: linear-gradient(135deg, var(--primary), var(--secondary));
     color: white !important;
-    padding: 0.6rem 1.8rem;
+    padding: 0.95rem 1.9rem;
     border-radius: 50px;
+    font-size: 1.05rem !important;
+    font-weight: 700 !important;
     transition: var(--transition);
 }
 
 .btn-login:hover {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 12px 28px rgba(14, 165, 233, 0.18);
 }
 
 .btn-login::after {

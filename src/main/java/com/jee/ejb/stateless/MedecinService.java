@@ -7,6 +7,7 @@ import com.jee.entity.Medecin;
 import com.jee.entity.Patient;
 import com.jee.entity.Prescription;
 import com.jee.entity.RendezVous;
+import com.jee.entity.Secretaire;
 import com.jee.rmi.server.NotificationServiceImpl;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
@@ -210,5 +211,33 @@ public class MedecinService implements MedecinServiceLocal {
                 .setParameter("medecinId", medecinId)
                 .setParameter("patientId", patientId)
                 .getResultList();
+    }
+
+    @Override
+    public List<Secretaire> getSecretairesByMedecin(int medecinId) {
+        return em.createQuery(
+                        "SELECT s FROM Secretaire s WHERE s.medecin.id = :medecinId ORDER BY s.nom, s.prenom",
+                        Secretaire.class
+                )
+                .setParameter("medecinId", medecinId)
+                .getResultList();
+    }
+
+    @Override
+    public void deleteSecretaire(int medecinId, int secretaireId) {
+        List<Secretaire> secretaires = em.createQuery(
+                        "SELECT s FROM Secretaire s WHERE s.id = :secretaireId AND s.medecin.id = :medecinId",
+                        Secretaire.class
+                )
+                .setParameter("secretaireId", secretaireId)
+                .setParameter("medecinId", medecinId)
+                .setMaxResults(1)
+                .getResultList();
+
+        if (secretaires.isEmpty()) {
+            throw new IllegalArgumentException("Secretaire introuvable pour ce medecin.");
+        }
+
+        em.remove(secretaires.get(0));
     }
 }
