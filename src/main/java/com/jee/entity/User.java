@@ -5,13 +5,15 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name = "user")
+@Table(name = "USER")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(name = "cin", nullable = false, unique = true)
+    private int cin;
 
     public enum Role {
         ADMIN,
@@ -57,6 +59,14 @@ public class User implements Serializable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getCIN() {
+        return cin;
+    }
+
+    public void setCIN(int cin) {
+        this.cin = cin;
     }
 
     public Role getRole() {

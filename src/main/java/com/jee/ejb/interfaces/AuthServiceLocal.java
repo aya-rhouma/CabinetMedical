@@ -1,6 +1,7 @@
 package com.jee.ejb.interfaces;
 
 import com.jee.entity.Patient;
+import com.jee.entity.Medecin;
 import com.jee.entity.User;
 import jakarta.ejb.Local;
 
@@ -12,4 +13,9 @@ public interface AuthServiceLocal {
     boolean emailExists(String email);
 
     Patient registerPatient(String firstName, String lastName, String email, String phone, String password);
+
+    Medecin registerMedecin(String firstName, String lastName, String email, String phone, String password,
+                            String specialite, String licenceNumber, String experience, String diplomePath);
+
+    boolean sendPasswordResetEmail(String email);
 }
