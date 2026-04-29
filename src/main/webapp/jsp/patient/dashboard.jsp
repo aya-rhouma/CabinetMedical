@@ -1,6 +1,5 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.jee.entity.RendezVous" %>
-<%@ page import="com.jee.entity.Medecin" %>
 <%@ page import="com.jee.entity.CertificatMedical" %>
 <%@ page import="com.jee.entity.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -9,9 +8,7 @@
     List<RendezVous> rdvPlanifies = (List<RendezVous>) request.getAttribute("rdvPlanifies");
     List<RendezVous> rdvPasses = (List<RendezVous>) request.getAttribute("rdvPasses");
     List<String> notifications = (List<String>) request.getAttribute("notifications");
-    List<Medecin> medecins = (List<Medecin>) request.getAttribute("medecinsDisponibles");
     List<CertificatMedical> demandesCertificats = (List<CertificatMedical>) request.getAttribute("demandesCertificats");
-    String specialite = (String) request.getAttribute("specialite");
     User patient = (User) session.getAttribute("user");
     String contextPath = request.getContextPath();
 
@@ -546,11 +543,11 @@
 
     <!-- Actions Rapides -->
     <div class="grid-4">
-        <a class="action-card" href="#reservation" data-aos="fade-up" data-aos-delay="400">
+        <a class="action-card" href="${pageContext.request.contextPath}/patient?action=reservationForm" data-aos="fade-up" data-aos-delay="400">
             <i class="fa-solid fa-calendar-plus"></i>
             <span class="title">Réserver RDV</span>
         </a>
-        <a class="action-card" href="#rdv-planifies" data-aos="fade-up" data-aos-delay="500">
+        <a class="action-card" href="${pageContext.request.contextPath}/patient?action=mesRdv" data-aos="fade-up" data-aos-delay="500">
             <i class="fa-solid fa-list-check"></i>
             <span class="title">Mes RDV</span>
         </a>
@@ -558,7 +555,7 @@
             <i class="fa-solid fa-bell"></i>
             <span class="title">Notifications</span>
         </a>
-        <a class="action-card" href="#certificats" data-aos="fade-up" data-aos-delay="700">
+        <a class="action-card" href="${pageContext.request.contextPath}/patient?action=demandeCertificat" data-aos="fade-up" data-aos-delay="700">
             <i class="fa-solid fa-file-circle-plus"></i>
             <span class="title">Certificats</span>
         </a>
@@ -574,7 +571,7 @@
 
     <!-- Section Notifications -->
     <section class="section-card" id="notifications" data-aos="fade-up">
-        <h2><i class="fas fa-bell"></i> Notifications en temps réel</h2>
+        <h2><i class="fas fa-bell"></i> Notifications</h2>
         <div id="notification-empty" class="muted <%= (notifications == null || notifications.isEmpty()) ? "" : "d-none" %>">
             <i class="fas fa-inbox"></i> Aucune nouvelle notification.
         </div>
@@ -584,198 +581,6 @@
             <li><i class="fas fa-circle" style="font-size: 0.6rem; color: var(--primary);"></i> <%= n %></li>
             <% }} %>
         </ul>
-    </section>
-
-    <!-- Section Réservation -->
-    <section class="section-card" id="reservation" data-aos="fade-up">
-        <h2><i class="fas fa-calendar-plus"></i> Réserver un rendez-vous</h2>
-
-        <!-- Formulaire de filtre -->
-        <form method="get" action="${pageContext.request.contextPath}/patient" class="form-grid">
-            <div>
-                <input type="text" name="specialite" placeholder="Spécialité" value="<%= specialite != null ? specialite : "" %>">
-            </div>
-            <div>
-                <input type="date" name="dateRdv">
-            </div>
-            <div>
-                <input type="time" name="heureDebut">
-            </div>
-            <div>
-                <input type="time" name="heureFin">
-            </div>
-            <div>
-                <button class="btn btn-outline" type="submit">
-                    <i class="fas fa-search"></i> Filtrer
-                </button>
-            </div>
-        </form>
-
-        <hr style="margin: 1rem 0; border-color: var(--border);">
-
-        <!-- Formulaire de réservation -->
-        <form method="post" action="${pageContext.request.contextPath}/patient" class="form-grid">
-            <input type="hidden" name="action" value="reserverRdv">
-            <div>
-                <select name="medecinId" required>
-                    <option value="">Choisir un médecin</option>
-                    <% if (medecins != null) {
-                        for (Medecin m : medecins) { %>
-                    <option value="<%= m.getId() %>">
-                        <%= m.getPrenom() %> <%= m.getNom() %> - <%= m.getSpecialite() %>
-                    </option>
-                    <% }} %>
-                </select>
-            </div>
-            <div>
-                <input type="date" name="dateRdv" required>
-            </div>
-            <div>
-                <input type="time" name="heureDebut" required>
-            </div>
-            <div>
-                <input type="time" name="heureFin" required>
-            </div>
-            <div>
-                <button class="btn btn-success" type="submit">
-                    <i class="fas fa-check"></i> Réserver
-                </button>
-            </div>
-        </form>
-    </section>
-
-    <!-- Sections RDV Planifiés et Passés -->
-    <div class="grid-2">
-        <!-- RDV Planifiés -->
-        <section class="section-card" id="rdv-planifies" data-aos="fade-up">
-            <h2><i class="fas fa-calendar-check"></i> Rendez-vous planifiés</h2>
-            <table>
-                <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Heure</th>
-                    <th>Médecin</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                <% if (rdvPlanifies == null || rdvPlanifies.isEmpty()) { %>
-                <tr>
-                    <td colspan="4" class="muted">Aucun rendez-vous planifié</td>
-                </tr>
-                <% } else {
-                    for (RendezVous r : rdvPlanifies) { %>
-                <tr>
-                    <td><%= r.getDateRdv() %></td>
-                    <td><%= r.getHeureDebut() %> - <%= r.getHeureFin() %></td>
-                    <td><%= r.getMedecin().getPrenom() %> <%= r.getMedecin().getNom() %></td>
-                    <td>
-                        <form method="post" action="${pageContext.request.contextPath}/patient" style="display:inline;">
-                            <input type="hidden" name="action" value="annulerRdv">
-                            <input type="hidden" name="rdvId" value="<%= r.getId() %>">
-                            <button type="submit" class="btn btn-danger">
-                                <i class="fas fa-times"></i> Annuler
-                            </button>
-                        </form>
-                        <a class="btn btn-outline" href="${pageContext.request.contextPath}/patient?action=calendar&rdvId=<%= r.getId() %>">
-                            <i class="fas fa-calendar-alt"></i> Calendrier
-                        </a>
-                    </td>
-                </tr>
-                <% }} %>
-                </tbody>
-            </table>
-        </section>
-
-        <!-- RDV Passés -->
-        <section class="section-card" data-aos="fade-up">
-            <h2><i class="fas fa-history"></i> Rendez-vous passés</h2>
-            <table>
-                <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Heure</th>
-                    <th>Médecin</th>
-                </tr>
-                </thead>
-                <tbody>
-                <% if (rdvPasses == null || rdvPasses.isEmpty()) { %>
-                <tr>
-                    <td colspan="3" class="muted">Aucun rendez-vous passé</td>
-                </tr>
-                <% } else {
-                    for (RendezVous r : rdvPasses) { %>
-                <tr>
-                    <td><%= r.getDateRdv() %></td>
-                    <td><%= r.getHeureDebut() %> - <%= r.getHeureFin() %></td>
-                    <td><%= r.getMedecin().getPrenom() %> <%= r.getMedecin().getNom() %></td>
-                </tr>
-                <% }} %>
-                </tbody>
-            </table>
-        </section>
-    </div>
-
-    <!-- Section Certificats -->
-    <section class="section-card" id="certificats" data-aos="fade-up">
-        <h2><i class="fas fa-file-medical"></i> Demandes de certificats</h2>
-
-        <form method="post" action="${pageContext.request.contextPath}/patient" class="form-grid">
-            <input type="hidden" name="action" value="demanderCertificat">
-            <div>
-                <select name="medecinId" required>
-                    <option value="">Médecin concerné</option>
-                    <% if (medecins != null) {
-                        for (Medecin m : medecins) { %>
-                    <option value="<%= m.getId() %>">
-                        <%= m.getPrenom() %> <%= m.getNom() %> - <%= m.getSpecialite() %>
-                    </option>
-                    <% }} %>
-                </select>
-            </div>
-            <div>
-                <input type="text" name="motif" placeholder="Motif de la demande" required>
-            </div>
-            <div>
-                <button class="btn btn-primary" type="submit">
-                    <i class="fas fa-paper-plane"></i> Envoyer
-                </button>
-            </div>
-        </form>
-
-        <hr style="margin: 1.5rem 0; border-color: var(--border);">
-
-        <table>
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Médecin</th>
-                <th>Motif</th>
-                <th>Statut</th>
-            </tr>
-            </thead>
-            <tbody>
-            <% if (demandesCertificats == null || demandesCertificats.isEmpty()) { %>
-            <tr>
-                <td colspan="4" class="muted">Aucune demande</td>
-            </tr>
-            <% } else {
-                for (CertificatMedical c : demandesCertificats) { %>
-            <tr>
-                <td><%= c.getId() %></td>
-                <td><%= c.getMedecin().getPrenom() %> <%= c.getMedecin().getNom() %></td>
-                <td><%= c.getMotif() %></td>
-                <td>
-                        <span class="role-badge" style="background:
-                            <%= c.getStatut().equals("APPROUVE") ? "var(--secondary)" :
-                               c.getStatut().equals("REJETE") ? "var(--danger)" : "var(--warning)" %>;">
-                            <%= c.getStatut() %>
-                        </span>
-                </td>
-            </tr>
-            <% }} %>
-            </tbody>
-        </table>
     </section>
 </main>
 

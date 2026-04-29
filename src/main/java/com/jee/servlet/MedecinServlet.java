@@ -1,11 +1,15 @@
 package com.jee.servlet;
 
+import java.io.IOException;
+import java.util.List;
+
 import com.jee.ejb.interfaces.MedecinServiceLocal;
 import com.jee.entity.CertificatMedical;
 import com.jee.entity.DossierMedical;
 import com.jee.entity.Patient;
 import com.jee.entity.Prescription;
 import com.jee.entity.RendezVous;
+
 import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -13,9 +17,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
-import java.io.IOException;
-import java.util.List;
 
 @WebServlet("/medecin")
 public class MedecinServlet extends HttpServlet {
@@ -51,6 +52,7 @@ public class MedecinServlet extends HttpServlet {
         try {
             switch (action) {
                 case "patients" -> forwardPatients(req, resp, medecinId);
+                case "dossiers" -> forwardDossiers(req, resp, medecinId);
                 case "rdv" -> forwardRdv(req, resp, medecinId);
                 case "dossier" -> forwardDossier(req, resp, medecinId);
                 case "addPrescription" -> addPrescription(req, resp, medecinId);
@@ -84,6 +86,12 @@ public class MedecinServlet extends HttpServlet {
         req.getRequestDispatcher("/jsp/medecin/patients.jsp").forward(req, resp);
     }
 
+    private void forwardDossiers(HttpServletRequest req, HttpServletResponse resp, int medecinId)
+            throws ServletException, IOException {
+        req.setAttribute("patients", medecinService.getPatientsByMedecin(medecinId));
+        req.getRequestDispatcher("/jsp/medecin/dossier.jsp").forward(req, resp);
+    }
+
     private void forwardRdv(HttpServletRequest req, HttpServletResponse resp, int medecinId)
             throws ServletException, IOException {
         String patientIdParam = req.getParameter("patientId");
@@ -105,7 +113,13 @@ public class MedecinServlet extends HttpServlet {
 
     private void forwardDossier(HttpServletRequest req, HttpServletResponse resp, int medecinId)
             throws ServletException, IOException {
-        int patientId = Integer.parseInt(req.getParameter("patientId"));
+        String patientIdParam = req.getParameter("patientId");
+        if (patientIdParam == null || patientIdParam.isBlank()) {
+            resp.sendRedirect(req.getContextPath() + "/medecin?action=dossiers");
+            return;
+        }
+
+        int patientId = Integer.parseInt(patientIdParam);
         Patient patient = medecinService.getPatientByMedecin(medecinId, patientId);
         DossierMedical dossier = medecinService.getDossierMedical(medecinId, patientId);
         List<Prescription> prescriptions = medecinService.getPrescriptionsByPatient(medecinId, patientId);

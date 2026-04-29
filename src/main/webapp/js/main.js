@@ -87,7 +87,6 @@ if (newsletterForm) {
         const email = input.value;
 
         if (email && email.includes('@')) {
-            // Here you would typically send to your backend
             alert(`Merci pour votre inscription ! Un email de confirmation a été envoyé à ${email}`);
             input.value = '';
         } else {
@@ -105,7 +104,6 @@ window.addEventListener('load', () => {
 const cards = document.querySelectorAll('.card');
 cards.forEach(card => {
     card.addEventListener('click', (e) => {
-        // Don't trigger if clicking on the button
         if (!e.target.closest('.btn-access')) {
             card.style.transform = 'scale(0.98)';
             setTimeout(() => {
@@ -113,4 +111,105 @@ cards.forEach(card => {
             }, 200);
         }
     });
+});
+
+// ============================================
+// DOCTORS SECTION FUNCTIONS
+// ============================================
+
+function showToast(message, type = 'success') {
+    let toast = document.querySelector('.toast-notification');
+    if (toast) toast.remove();
+
+    toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+        <span>${message}</span>
+    `;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.animation = 'fadeInUp 0.3s ease reverse';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+function initDoctorsDomFiltering() {
+    const grid = document.getElementById('doctorsGrid');
+    if (!grid) return;
+
+    const applyBtn = document.getElementById('applyFilters');
+    const resetBtn = document.getElementById('resetFilters');
+    const searchInput = document.getElementById('searchDoctor');
+    const specialtySelect = document.getElementById('specialiteFilter');
+    const availabilitySelect = document.getElementById('disponibiliteFilter');
+
+    const getCards = () => Array.from(grid.querySelectorAll('.doctor-card'));
+    const ensureEmptyState = () => {
+        let empty = grid.querySelector('.empty-doctors');
+        if (!empty) {
+            empty = document.createElement('div');
+            empty.className = 'empty-doctors';
+            empty.innerHTML = `
+                <i class="fas fa-search"></i>
+                <p>Aucun médecin trouvé</p>
+            `;
+            grid.appendChild(empty);
+        }
+        return empty;
+    };
+
+    const applyFilters = () => {
+        const specialty = specialtySelect?.value || 'all';
+        const availability = availabilitySelect?.value || 'all';
+        const searchTerm = (searchInput?.value || '').toLowerCase();
+
+        const cards = getCards();
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const cardSpecialty = (card.dataset.specialty || '').trim();
+            const cardAvailability = (card.dataset.availability || '').trim();
+            const cardName = (card.querySelector('.doctor-name')?.textContent || '').toLowerCase();
+
+            const matchesSpecialty = specialty === 'all' || cardSpecialty === specialty;
+            const matchesAvailability = availability === 'all' || cardAvailability === availability;
+            const matchesSearch = !searchTerm || cardName.includes(searchTerm);
+
+            const isVisible = matchesSpecialty && matchesAvailability && matchesSearch;
+            card.style.display = isVisible ? '' : 'none';
+            if (isVisible) visibleCount++;
+        });
+
+        const empty = ensureEmptyState();
+        empty.style.display = visibleCount === 0 ? '' : 'none';
+    };
+
+    const resetFilters = () => {
+        if (specialtySelect) specialtySelect.value = 'all';
+        if (availabilitySelect) availabilitySelect.value = 'all';
+        if (searchInput) searchInput.value = '';
+
+        getCards().forEach(card => {
+            card.style.display = '';
+        });
+
+        const empty = grid.querySelector('.empty-doctors');
+        if (empty) empty.style.display = 'none';
+
+        showToast('Filtres réinitialisés', 'success');
+    };
+
+    if (applyBtn) applyBtn.addEventListener('click', applyFilters);
+    if (resetBtn) resetBtn.addEventListener('click', resetFilters);
+    if (searchInput) {
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') applyFilters();
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    initDoctorsDomFiltering();
 });
