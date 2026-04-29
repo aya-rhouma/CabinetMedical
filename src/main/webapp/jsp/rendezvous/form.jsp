@@ -6,6 +6,7 @@
 <%
     User patient = (User) session.getAttribute("user");
     List<Medecin> medecins = (List<Medecin>) request.getAttribute("medecinsDisponibles");
+<<<<<<< Updated upstream
     String contextPath = request.getContextPath();
 
     if (patient == null) {
@@ -16,6 +17,9 @@
     String prenom = patient.getPrenom();
     String nom = patient.getNom();
     String initials = (prenom.substring(0, 1) + (nom.isBlank() ? "P" : nom.substring(0, 1))).toUpperCase();
+=======
+    String ctx = request.getContextPath();
+>>>>>>> Stashed changes
 %>
 
 <!DOCTYPE html>
@@ -23,6 +27,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< Updated upstream
     <meta name="description" content="Réserver un rendez-vous médical - MediCare Plus">
     <title>Réserver un RDV - MediCare Plus</title>
 
@@ -408,9 +413,17 @@
         .hero-panel { animation-delay: 0s; }
         .section-card { animation-delay: 0.1s; }
     </style>
+=======
+    <title>Réserver un RDV - MediCare Plus</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="<%= ctx %>/css/medecin.css">
+>>>>>>> Stashed changes
 </head>
 
 <body>
+<<<<<<< Updated upstream
 
 <!-- Navigation -->
 <nav class="navbar">
@@ -501,11 +514,82 @@
                 </button>
             </div>
         </form>
+=======
+
+<nav class="navbar">
+    <div class="nav-container">
+        <a class="logo" href="<%= ctx %>/"><i class="fas fa-heartbeat"></i><span>MediCare Plus</span></a>
+        <div class="nav-links">
+            <a href="<%= ctx %>/patient">Dashboard</a>
+            <a href="<%= ctx %>/patient?action=reservationForm" class="active">Prendre RDV</a>
+            <a href="<%= ctx %>/patient?action=mesRdv">Mes RDV</a>
+            <a href="<%= ctx %>/patient?action=demandeCertificat">Certificats</a>
+            <a href="<%= ctx %>/auth/logout" class="btn-login"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+        </div>
+        <div class="menu-toggle"><i class="fas fa-bars"></i></div>
+    </div>
+</nav>
+
+<main class="dashboard-main">
+    <div class="page-header" data-aos="fade-up">
+        <div class="breadcrumb">
+            <a href="<%= ctx %>/patient">Dashboard</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Réserver un RDV</span>
+        </div>
+        <h1><i class="fas fa-calendar-plus"></i> Prendre un rendez-vous</h1>
+    </div>
+
+    <div class="card" data-aos="fade-up" data-aos-delay="100">
+        <div class="card-header">
+            <h2><i class="fas fa-calendar-plus"></i> Nouvelle réservation</h2>
+        </div>
+        <div class="card-body">
+            <form method="post" action="<%= ctx %>/patient">
+                <input type="hidden" name="action" value="reserverRdv">
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem;">
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-user-doctor"></i> Médecin *</label>
+                        <select name="medecinId" class="form-control" required>
+                            <option value="">-- Choisir un médecin --</option>
+                            <% if (medecins != null) { for (Medecin m : medecins) { %>
+                            <option value="<%= m.getId() %>">
+                                Dr <%= m.getPrenom() %> <%= m.getNom() %> — <%= m.getSpecialite() %>
+                            </option>
+                            <% } } %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-calendar"></i> Date *</label>
+                        <input type="date" name="dateRdv" class="form-control" required
+                               min="<%= java.time.LocalDate.now().toString() %>">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-clock"></i> Heure début *</label>
+                        <input type="time" name="heureDebut" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-clock"></i> Heure fin *</label>
+                        <input type="time" name="heureFin" class="form-control" required>
+                    </div>
+                </div>
+                <div style="display:flex;gap:1rem;margin-top:1rem;">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-check"></i> Confirmer la réservation
+                    </button>
+                    <a href="<%= ctx %>/patient" class="btn-action">
+                        <i class="fas fa-arrow-left"></i> Annuler
+                    </a>
+                </div>
+            </form>
+        </div>
+>>>>>>> Stashed changes
     </div>
 </main>
 
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
+<<<<<<< Updated upstream
     AOS.init({ duration: 900, once: true, offset: 80, easing: 'ease-in-out' });
 
     const menuToggle = document.querySelector('.menu-toggle');
@@ -533,3 +617,12 @@
 </script>
 </body>
 </html>
+=======
+    AOS.init({ duration: 800, once: true });
+    document.querySelector('.menu-toggle')?.addEventListener('click', () => {
+        document.querySelector('.nav-links').classList.toggle('active');
+    });
+</script>
+</body>
+</html>
+>>>>>>> Stashed changes

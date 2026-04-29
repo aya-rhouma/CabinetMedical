@@ -82,10 +82,11 @@ public class AuthServlet extends HttpServlet {
         }
 
         User.Role userRole = switch (role) {
-            case "patient" -> User.Role.PATIENT;
-            case "medecin" -> User.Role.MEDECIN;
+            case "patient"    -> User.Role.PATIENT;
+            case "medecin"    -> User.Role.MEDECIN;
             case "secretaire" -> User.Role.SECRETAIRE;
-            default -> null;
+            case "admin"      -> User.Role.ADMIN;
+            default           -> null;
         };
 
         if (userRole == null) {
@@ -103,10 +104,11 @@ public class AuthServlet extends HttpServlet {
         session.setAttribute("user", user);
 
         switch (user.getRole()) {
-            case PATIENT -> resp.sendRedirect(req.getContextPath() + "/patient");
-            case MEDECIN -> resp.sendRedirect(req.getContextPath() + "/medecin");
+            case PATIENT    -> resp.sendRedirect(req.getContextPath() + "/patient");
+            case MEDECIN    -> resp.sendRedirect(req.getContextPath() + "/medecin");
             case SECRETAIRE -> resp.sendRedirect(req.getContextPath() + "/secretaire");
-            default -> resp.sendRedirect(req.getContextPath() + "/");
+            case ADMIN      -> resp.sendRedirect(req.getContextPath() + "/admin");
+            default         -> resp.sendRedirect(req.getContextPath() + "/");
         }
     }
 
