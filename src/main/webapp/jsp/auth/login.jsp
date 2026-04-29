@@ -83,17 +83,457 @@
     <meta name="description" content="Connexion à l'espace sécurisé de MediCare Plus">
     <title><%= roleTitle %> - MediCare Plus</title>
 
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Auth CSS -->
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/auth.css">
-
     <style>
-        /* Styles pour le modal */
+        /* ============================================
+           VARIABLES CSS
+           ============================================ */
+        :root {
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #0f172a;
+            --gray: #64748b;
+            --light-gray: #f8fafc;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* Background decoration */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+            opacity: 0.15;
+        }
+
+        /* Container */
+        .auth-container {
+            width: 100%;
+            max-width: 480px;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        /* Logo */
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo a {
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-left: 0.5rem;
+        }
+
+        /* Auth Card */
+        .auth-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .auth-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Card Header */
+        .card-header {
+            background: linear-gradient(135deg, #f8fafc, #ffffff);
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .role-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .card-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-header p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 1rem;
+            margin: 1rem 2rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: var(--danger);
+            border-left: 4px solid var(--danger);
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: var(--secondary);
+            border-left: 4px solid var(--secondary);
+        }
+
+        .alert i {
+            font-size: 1.2rem;
+        }
+
+        .alert-content {
+            flex: 1;
+            font-size: 0.9rem;
+        }
+
+        /* Role Selector Horizontal */
+        .role-selector-horizontal {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 2rem;
+        }
+
+        .role-card-horizontal {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: var(--light-gray);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            text-decoration: none;
+        }
+
+        .role-card-horizontal:hover {
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        .role-card-horizontal.active {
+            background: white;
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+        }
+
+        .role-card-horizontal i {
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .role-card-horizontal span {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+
+        .role-badge {
+            background: var(--warning);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 50px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            margin-left: 0.25rem;
+        }
+
+        .role-badge-free {
+            background: var(--secondary);
+        }
+
+        /* Admin Role Selector */
+        .admin-role-selector {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 2rem;
+            flex-wrap: wrap;
+        }
+
+        .admin-role-btn {
+            flex: 1;
+            padding: 0.6rem;
+            text-align: center;
+            background: var(--light-gray);
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--gray);
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .admin-role-btn i {
+            font-size: 1rem;
+        }
+
+        .admin-role-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .admin-role-btn:hover:not(.active) {
+            background: var(--border);
+            color: var(--dark);
+            transform: translateY(-2px);
+        }
+
+        /* Login Form */
+        .auth-form {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+
+        .form-group label i {
+            margin-right: 0.5rem;
+            color: var(--primary);
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group i:first-child {
+            position: absolute;
+            left: 1rem;
+            color: var(--gray);
+            font-size: 1rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.85rem 1rem 0.85rem 2.8rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            left: auto !important;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .checkbox input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .forgot-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 0.85rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Footer Links */
+        .card-footer-links {
+            padding: 1.5rem;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            background: var(--light-gray);
+        }
+
+        .card-footer-links p {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        .card-footer-links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .card-footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .btn-back-link {
+            display: inline-block;
+            margin-top: 0.5rem;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.8rem;
+            text-decoration: none;
+            background: var(--light-gray);
+            color: var(--gray);
+            border-radius: 8px;
+        }
+
+        .btn-back-link:hover {
+            background: var(--border);
+            color: var(--dark);
+        }
+
+        .text-muted {
+            color: var(--gray);
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Back to Home */
+        .back-home {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .back-home a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0.8;
+            transition: var(--transition);
+        }
+
+        .back-home a:hover {
+            opacity: 1;
+            gap: 0.75rem;
+        }
+
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -128,14 +568,15 @@
         }
 
         .modal-content h3 {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             margin-bottom: 0.5rem;
             color: var(--dark);
         }
 
         .modal-content p {
             color: var(--gray);
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
         }
 
         .modal-input {
@@ -145,7 +586,6 @@
             border-radius: 12px;
             font-size: 1rem;
             margin-bottom: 1rem;
-            font-family: 'Inter', sans-serif;
         }
 
         .modal-input:focus {
@@ -160,7 +600,7 @@
 
         .modal-btn {
             flex: 1;
-            padding: 0.8rem;
+            padding: 0.7rem;
             border: none;
             border-radius: 12px;
             font-weight: 600;
@@ -173,134 +613,19 @@
             color: white;
         }
 
-        .modal-btn-primary:hover {
-            transform: translateY(-2px);
-        }
-
         .modal-btn-secondary {
             background: var(--light-gray);
             color: var(--gray);
         }
 
-        .modal-btn-secondary:hover {
-            background: var(--border);
-        }
-
         .modal-error {
             color: var(--danger);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             margin-top: -0.5rem;
             margin-bottom: 1rem;
         }
 
-        /* Style pour le sélecteur horizontal */
-        .role-selector-horizontal {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .role-card-horizontal {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            padding: 1rem;
-            background: var(--light-gray);
-            border-radius: 16px;
-            cursor: pointer;
-            transition: var(--transition);
-            border: 2px solid transparent;
-            text-decoration: none;
-        }
-
-        .role-card-horizontal:hover {
-            background: white;
-            transform: translateY(-2px);
-        }
-
-        .role-card-horizontal.active {
-            background: white;
-            border-color: var(--primary);
-            box-shadow: var(--shadow);
-        }
-
-        .role-card-horizontal i {
-            font-size: 1.3rem;
-            color: var(--primary);
-        }
-
-        .role-card-horizontal span {
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        .role-badge {
-            background: var(--warning);
-            color: white;
-            padding: 0.2rem 0.6rem;
-            border-radius: 50px;
-            font-size: 0.65rem;
-            font-weight: 600;
-            margin-left: 0.5rem;
-        }
-
-        .role-badge-free {
-            background: var(--secondary);
-        }
-
-        /* Style pour le mode restreint (3 rôles) */
-        .admin-role-selector {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .admin-role-btn {
-            flex: 1;
-            padding: 0.75rem;
-            text-align: center;
-            background: var(--light-gray);
-            border-radius: 12px;
-            text-decoration: none;
-            color: var(--gray);
-            font-weight: 500;
-            transition: var(--transition);
-        }
-
-        .admin-role-btn i {
-            margin-right: 0.5rem;
-        }
-
-        .admin-role-btn.active {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-        }
-
-        .admin-role-btn:hover:not(.active) {
-            background: var(--border);
-            color: var(--dark);
-        }
-
-        .btn-back-link {
-            display: inline-block;
-            margin-top: 0.75rem;
-            padding: 0.3rem 0.8rem;
-            font-size: 0.8rem;
-            text-decoration: none;
-            background: var(--light-gray);
-            color: var(--gray);
-            border-radius: 8px;
-            transition: var(--transition);
-        }
-
-        .btn-back-link:hover {
-            background: var(--border);
-            color: var(--dark);
-        }
-
+        /* Animations */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -312,13 +637,48 @@
             }
         }
 
-        @media (max-width: 480px) {
-            .role-selector-horizontal {
-                flex-direction: column;
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
             }
 
+            .role-selector-horizontal,
             .admin-role-selector {
                 flex-direction: column;
+                margin: 1rem;
+            }
+
+            .admin-role-btn {
+                width: 100%;
+            }
+
+            .auth-form {
+                padding: 1.5rem;
+            }
+
+            .card-header {
+                padding: 1.5rem;
+            }
+
+            .card-header h2 {
+                font-size: 1.5rem;
+            }
+
+            .form-options {
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
     </style>
@@ -437,16 +797,14 @@
         <!-- Footer Links -->
         <div class="card-footer-links">
             <% if (!isRestrictedMode) { %>
-            <!-- Mode normal : afficher le lien création compte patient -->
             <p>Vous n'avez pas de compte patient ?
                 <a href="register.jsp?role=patient">Créer un compte patient</a>
             </p>
-            <p class="mt-2 mb-0 text-muted">
+            <p class="text-muted">
                 Le mode restreint est réservé aux professionnels de santé.
             </p>
             <% } else { %>
-            <!-- Mode restreint : ne pas afficher le lien création compte -->
-            <p class="mt-2 mb-0 text-muted">
+            <p class="text-muted">
                 <i class="fas fa-lock"></i> Mode restreint activé
             </p>
             <a href="?role=patient" class="btn-back-link">
@@ -472,7 +830,7 @@
             <i class="fas fa-lock"></i>
         </div>
         <h3>Accès mode restreint</h3>
-        <p>Cette section est réservée aux professionnels de santé (Administrateurs, Médecins, Secrétaires). Veuillez saisir le mot de passe d'accès.</p>
+        <p>Cette section est réservée aux professionnels de santé. Veuillez saisir le mot de passe d'accès.</p>
         <input type="password" id="accessPassword" class="modal-input" placeholder="Mot de passe d'accès">
         <div id="modalError" class="modal-error"></div>
         <div class="modal-buttons">

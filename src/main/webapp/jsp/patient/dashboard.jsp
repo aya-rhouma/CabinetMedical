@@ -12,7 +12,6 @@
     User patient = (User) session.getAttribute("user");
     String contextPath = request.getContextPath();
 
-    // Vérification session
     if (patient == null) {
         response.sendRedirect(contextPath + "/jsp/auth/login.jsp");
         return;
@@ -34,28 +33,126 @@
     <meta name="description" content="Dashboard Patient - MediCare Plus">
     <title>Dashboard Patient - MediCare Plus</title>
 
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <!-- AOS Animation Library -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-
     <style>
-        /* Styles spécifiques au dashboard patient */
-        .dashboard-main {
-            padding: 2rem 5%;
-            max-width: 1400px;
-            margin: 0 auto;
-            width: 100%;
+        /* ============================================
+           VARIABLES CSS
+           ============================================ */
+        :root {
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #0f172a;
+            --gray: #64748b;
+            --light-gray: #f8fafc;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Hero Panel */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        /* ============================================
+           NAVIGATION
+           ============================================ */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-decoration: none;
+        }
+
+        .logo i {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--gray);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white !important;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark);
+        }
+
+        /* ============================================
+           DASHBOARD MAIN
+           ============================================ */
+        .dashboard-main {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* ============================================
+           HERO PANEL
+           ============================================ */
         .hero-panel {
             background: white;
             border-radius: 24px;
@@ -78,6 +175,13 @@
             margin-bottom: 0.5rem;
         }
 
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
         .role-badge {
             display: inline-block;
             padding: 0.4rem 1rem;
@@ -87,6 +191,10 @@
             font-size: 0.85rem;
             font-weight: 600;
             margin: 0.5rem 0;
+        }
+
+        .role-badge i {
+            margin-right: 0.5rem;
         }
 
         .avatar {
@@ -104,29 +212,26 @@
             box-shadow: var(--shadow);
         }
 
-        /* Grid Systems */
+        /* ============================================
+           GRID SYSTEMS
+           ============================================ */
         .grid-3 {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
         .grid-4 {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        /* Stat Cards */
+        /* ============================================
+           STAT CARDS
+           ============================================ */
         .stat-card {
             background: white;
             border-radius: 20px;
@@ -163,7 +268,7 @@
         }
 
         .stat-card h3 {
-            font-size: 1rem;
+            font-size: 0.85rem;
             font-weight: 600;
             color: var(--gray);
             margin-bottom: 0.5rem;
@@ -180,30 +285,9 @@
             color: transparent;
         }
 
-        /* Section Cards */
-        .section-card {
-            background: white;
-            border-radius: 20px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-        }
-
-        .section-card:hover {
-            box-shadow: var(--shadow-lg);
-        }
-
-        .section-card h2 {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 1.2rem;
-            color: var(--dark);
-            border-left: 4px solid var(--primary);
-            padding-left: 1rem;
-        }
-
-        /* Action Cards */
+        /* ============================================
+           ACTION CARDS
+           ============================================ */
         .action-card {
             background: white;
             border-radius: 20px;
@@ -258,7 +342,7 @@
 
         .action-card .title {
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.9rem;
             position: relative;
             z-index: 1;
         }
@@ -267,104 +351,48 @@
             color: white;
         }
 
-        /* Forms */
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1rem;
-            align-items: end;
-        }
-
-        .form-grid input, .form-grid select {
-            width: 100%;
-            padding: 0.7rem 1rem;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            font-size: 0.9rem;
-            font-family: 'Inter', sans-serif;
+        /* ============================================
+           CARD
+           ============================================ */
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
             transition: var(--transition);
         }
 
-        .form-grid input:focus, .form-grid select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        .card:hover {
+            box-shadow: var(--shadow-lg);
         }
 
-        /* Tables */
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        .card-header {
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, #f8fafc, #ffffff);
+            border-bottom: 1px solid var(--border);
         }
 
-        thead th {
-            text-align: left;
-            padding: 0.75rem;
-            background: var(--light-gray);
+        .card-header h2 {
+            font-size: 1.2rem;
             font-weight: 600;
             color: var(--dark);
-            border-bottom: 2px solid var(--border);
-        }
-
-        tbody td {
-            padding: 0.75rem;
-            border-bottom: 1px solid var(--border);
-            color: var(--gray);
-        }
-
-        tbody tr:hover {
-            background: var(--light-gray);
-        }
-
-        .muted {
-            text-align: center;
-            color: var(--gray);
-            padding: 2rem;
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 0.7rem 1.2rem;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             gap: 0.5rem;
-            font-family: 'Inter', sans-serif;
         }
 
-        .btn-success {
-            background: linear-gradient(135deg, var(--secondary), #059669);
-            color: white;
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, var(--danger), #dc2626);
-            color: white;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--primary);
+        .card-header h2 i {
             color: var(--primary);
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
+        .card-body {
+            padding: 1.5rem;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow);
-        }
-
-        /* Alert */
+        /* ============================================
+           ALERT
+           ============================================ */
         .alert {
             padding: 1rem;
             margin-bottom: 1.5rem;
@@ -380,37 +408,109 @@
             border-left: 4px solid var(--danger);
         }
 
-        /* Notification List */
-        #notification-list {
+        .alert i {
+            font-size: 1.2rem;
+        }
+
+        /* ============================================
+           NOTIFICATIONS
+           ============================================ */
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .empty-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--light-gray);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .empty-icon i {
+            font-size: 1.5rem;
+            color: var(--gray);
+        }
+
+        .empty-state h3 {
+            font-size: 1rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        .notification-list {
             list-style: none;
         }
 
-        #notification-list li {
+        .notification-list li {
             padding: 0.75rem;
             background: var(--light-gray);
             margin-bottom: 0.5rem;
             border-radius: 10px;
             border-left: 3px solid var(--primary);
+            transition: var(--transition);
+        }
+
+        .notification-list li:hover {
+            background: #e2e8f0;
+            transform: translateX(5px);
+        }
+
+        .notification-list li i {
+            margin-right: 0.5rem;
+            color: var(--primary);
         }
 
         .d-none {
             display: none;
         }
 
-        /* Responsive */
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
         @media (max-width: 1024px) {
-            .grid-2 {
-                grid-template-columns: 1fr;
+            .grid-3, .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
         @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 1rem;
+                gap: 1rem;
+                box-shadow: var(--shadow);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
             .dashboard-main {
                 padding: 1rem;
             }
 
             .hero-panel h1 {
-                font-size: 1.5rem;
+                font-size: 1.3rem;
             }
 
             .avatar {
@@ -419,47 +519,49 @@
                 font-size: 1.5rem;
             }
 
-            .stat-card .value {
-                font-size: 2rem;
-            }
-
-            .grid-3, .grid-4, .grid-2 {
+            .grid-3, .grid-4 {
                 grid-template-columns: 1fr;
                 gap: 1rem;
             }
 
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            table {
-                font-size: 0.85rem;
-                overflow-x: auto;
-                display: block;
-            }
-
-            .btn {
-                padding: 0.5rem 0.8rem;
-                font-size: 0.8rem;
+            .stat-card .value {
+                font-size: 2rem;
             }
         }
 
         @media (max-width: 480px) {
             .hero-panel {
-                padding: 1.5rem;
-            }
-
-            .section-card {
                 padding: 1rem;
             }
 
-            .section-card h2 {
-                font-size: 1.1rem;
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .action-card {
+                padding: 1rem;
+            }
+
+            .action-card i {
+                font-size: 1.5rem;
             }
         }
 
-        /* Animations */
-        .stat-card, .action-card, .hero-panel, .section-card {
+        /* ============================================
+           ANIMATIONS
+           ============================================ */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-card, .action-card, .hero-panel, .card {
             animation: fadeInUp 0.6s ease forwards;
             opacity: 0;
         }
@@ -472,36 +574,24 @@
         .action-card:nth-child(3) { animation-delay: 0.6s; }
         .action-card:nth-child(4) { animation-delay: 0.7s; }
         .hero-panel { animation-delay: 0s; }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
     </style>
 </head>
-
 <body>
 
-<!-- Navigation (identique à index.jsp) -->
+<!-- Navigation -->
 <nav class="navbar">
     <div class="nav-container">
-        <div class="logo">
+        <a class="logo" href="<%= contextPath %>/">
             <i class="fas fa-heartbeat"></i>
             <span>MediCare Plus</span>
-        </div>
+        </a>
         <div class="nav-links">
-            <a href="${pageContext.request.contextPath}/">Accueil</a>
+            <a href="<%= contextPath %>/">Accueil</a>
             <a href="#" class="active">Dashboard</a>
-            <a href="#reservation">Prendre RDV</a>
-            <a href="#rdv-planifies">Mes RDV</a>
-            <a href="#certificats">Certificats</a>
-            <a href="${pageContext.request.contextPath}/auth/logout" class="btn-login">
+            <a href="<%= contextPath %>/patient?action=reservationForm">Prendre RDV</a>
+            <a href="<%= contextPath %>/patient?action=mesRdv">Mes RDV</a>
+            <a href="<%= contextPath %>/patient?action=demandeCertificat">Certificats</a>
+            <a href="<%= contextPath %>/auth/logout" class="btn-login">
                 <i class="fas fa-sign-out-alt"></i> Déconnexion
             </a>
         </div>
@@ -514,13 +604,13 @@
 <!-- Main Content -->
 <main class="dashboard-main">
     <!-- Hero Panel -->
-    <section class="hero-panel" data-aos="fade-up">
-        <h1>Bonjour, <span style="background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; color: transparent;"><%= prenom %> <%= nom %></span></h1>
+    <div class="hero-panel" data-aos="fade-up">
+        <h1>Bonjour, <span class="gradient-text"><%= prenom %> <%= nom %></span></h1>
         <span class="role-badge">
             <i class="fas fa-user-circle"></i> Patient
         </span>
         <div class="avatar"><%= initials %></div>
-    </section>
+    </div>
 
     <!-- Statistiques -->
     <div class="grid-3">
@@ -543,11 +633,11 @@
 
     <!-- Actions Rapides -->
     <div class="grid-4">
-        <a class="action-card" href="${pageContext.request.contextPath}/patient?action=reservationForm" data-aos="fade-up" data-aos-delay="400">
+        <a class="action-card" href="<%= contextPath %>/patient?action=reservationForm" data-aos="fade-up" data-aos-delay="400">
             <i class="fa-solid fa-calendar-plus"></i>
             <span class="title">Réserver RDV</span>
         </a>
-        <a class="action-card" href="${pageContext.request.contextPath}/patient?action=mesRdv" data-aos="fade-up" data-aos-delay="500">
+        <a class="action-card" href="<%= contextPath %>/patient?action=mesRdv" data-aos="fade-up" data-aos-delay="500">
             <i class="fa-solid fa-list-check"></i>
             <span class="title">Mes RDV</span>
         </a>
@@ -555,7 +645,7 @@
             <i class="fa-solid fa-bell"></i>
             <span class="title">Notifications</span>
         </a>
-        <a class="action-card" href="${pageContext.request.contextPath}/patient?action=demandeCertificat" data-aos="fade-up" data-aos-delay="700">
+        <a class="action-card" href="<%= contextPath %>/patient?action=demandeCertificat" data-aos="fade-up" data-aos-delay="700">
             <i class="fa-solid fa-file-circle-plus"></i>
             <span class="title">Certificats</span>
         </a>
@@ -565,40 +655,39 @@
     <% if (request.getAttribute("error") != null) { %>
     <div class="alert alert-danger" data-aos="fade-up">
         <i class="fas fa-exclamation-circle"></i>
-        <%= request.getAttribute("error") %>
+        <span><%= request.getAttribute("error") %></span>
     </div>
     <% } %>
 
     <!-- Section Notifications -->
-    <section class="section-card" id="notifications" data-aos="fade-up">
-        <h2><i class="fas fa-bell"></i> Notifications</h2>
-        <div id="notification-empty" class="muted <%= (notifications == null || notifications.isEmpty()) ? "" : "d-none" %>">
-            <i class="fas fa-inbox"></i> Aucune nouvelle notification.
+    <div class="card" id="notifications" data-aos="fade-up">
+        <div class="card-header">
+            <h2><i class="fas fa-bell"></i> Notifications</h2>
         </div>
-        <ul id="notification-list" class="<%= (notifications == null || notifications.isEmpty()) ? "d-none" : "" %>">
-            <% if (notifications != null) {
-                for (String n : notifications) { %>
-            <li><i class="fas fa-circle" style="font-size: 0.6rem; color: var(--primary);"></i> <%= n %></li>
-            <% }} %>
-        </ul>
-    </section>
+        <div class="card-body">
+            <div id="notification-empty" class="empty-state <%= (notifications != null && !notifications.isEmpty()) ? "d-none" : "" %>">
+                <div class="empty-icon"><i class="fas fa-inbox"></i></div>
+                <h3>Aucune notification</h3>
+                <p>Vous n'avez aucune nouvelle notification.</p>
+            </div>
+            <ul id="notification-list" class="notification-list <%= (notifications == null || notifications.isEmpty()) ? "d-none" : "" %>">
+                <% if (notifications != null) {
+                    for (String n : notifications) { %>
+                <li>
+                    <i class="fas fa-circle"></i> <%= n %>
+                </li>
+                <% }} %>
+            </ul>
+        </div>
+    </div>
 </main>
 
-<!-- Scripts -->
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
-    // Initialize AOS
-    AOS.init({
-        duration: 1000,
-        once: true,
-        offset: 100,
-        easing: 'ease-in-out'
-    });
+    AOS.init({ duration: 900, once: true, offset: 80, easing: 'ease-in-out' });
 
-    // Mobile menu toggle
     const menuToggle = document.querySelector('.menu-toggle');
     const navLinks = document.querySelector('.nav-links');
-
     if (menuToggle) {
         menuToggle.addEventListener('click', () => {
             navLinks.classList.toggle('active');
@@ -613,40 +702,6 @@
         });
     }
 
-    // Active link highlighting
-    const currentPath = window.location.pathname;
-    const navItems = document.querySelectorAll('.nav-links a');
-    navItems.forEach(item => {
-        const href = item.getAttribute('href');
-        if (href === '#') return;
-        if (href && currentPath.includes(href.replace('${pageContext.request.contextPath}', ''))) {
-            item.classList.add('active');
-        }
-    });
-
-    // Smooth scroll for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            const targetId = this.getAttribute('href');
-            if (targetId === '#') return;
-
-            const target = document.querySelector(targetId);
-            if (target) {
-                e.preventDefault();
-                if (navLinks.classList.contains('active')) {
-                    navLinks.classList.remove('active');
-                    const icon = menuToggle.querySelector('i');
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                }
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        });
-    });
-
     // Notification polling
     (function() {
         const ctx = '<%= contextPath %>';
@@ -657,7 +712,7 @@
             if (!items || !items.length) return;
             items.forEach((message) => {
                 const li = document.createElement('li');
-                li.innerHTML = '<i class="fas fa-circle" style="font-size: 0.6rem; color: var(--primary);"></i> ' + message;
+                li.innerHTML = '<i class="fas fa-circle"></i> ' + message;
                 list.prepend(li);
             });
             list.classList.remove('d-none');
@@ -670,9 +725,7 @@
                 if (!response.ok) return;
                 const data = await response.json();
                 appendNotifications(data.notifications || []);
-            } catch (e) {
-                // ignore
-            }
+            } catch (e) {}
         }
 
         setInterval(pollNotifications, 8000);

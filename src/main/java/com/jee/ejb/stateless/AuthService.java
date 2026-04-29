@@ -3,6 +3,7 @@ package com.jee.ejb.stateless;
 import com.jee.ejb.interfaces.AuthServiceLocal;
 import com.jee.entity.Medecin;
 import com.jee.entity.Patient;
+import com.jee.entity.Secretaire;
 import com.jee.entity.User;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
@@ -86,6 +87,21 @@ public class AuthService implements AuthServiceLocal {
         medecin.setCIN(generateUniqueCIN());
         em.persist(medecin);
         return medecin;
+    }
+
+    @Override
+    public Secretaire registerSecretaire(String firstName, String lastName, String email, String phone, String password,
+                                         int medecinId) {
+        Secretaire secretaire = new Secretaire();
+        secretaire.setPrenom(firstName);
+        secretaire.setNom(lastName);
+        secretaire.setEmail(email.toLowerCase(Locale.ROOT));
+        secretaire.setTelephone(phone);
+        secretaire.setMotDePasse(password);
+        secretaire.setCIN(generateUniqueCIN());
+        secretaire.setMedecin(em.getReference(Medecin.class, medecinId));
+        em.persist(secretaire);
+        return secretaire;
     }
 
     @Override

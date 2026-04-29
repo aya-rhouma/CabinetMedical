@@ -31,4 +31,8 @@ public interface MedecinServiceLocal {
     List<CertificatMedical> getDemandesCertificats(int medecinId);
 
     List<CertificatMedical> getDemandesCertificatsByPatient(int medecinId, int patientId);
+
+    List<Secretaire> getSecretairesByMedecin(int medecinId);
+
+    void deleteSecretaire(int medecinId, int secretaireId);
 }

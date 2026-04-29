@@ -3,12 +3,14 @@ package com.jee.servlet;
 import java.io.IOException;
 import java.util.List;
 
+import com.jee.ejb.interfaces.AuthServiceLocal;
 import com.jee.ejb.interfaces.MedecinServiceLocal;
 import com.jee.entity.CertificatMedical;
 import com.jee.entity.DossierMedical;
 import com.jee.entity.Patient;
 import com.jee.entity.Prescription;
 import com.jee.entity.RendezVous;
+import com.jee.entity.Secretaire;
 
 import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
@@ -23,6 +25,8 @@ public class MedecinServlet extends HttpServlet {
 
     @EJB
     private MedecinServiceLocal medecinService;
+    @EJB
+    private AuthServiceLocal authService;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -59,11 +63,18 @@ public class MedecinServlet extends HttpServlet {
                 case "saveDossier" -> saveDossier(req, resp, medecinId);
                 case "certificats" -> forwardCertificats(req, resp, medecinId);
                 case "genererCertificat" -> genererCertificat(req, resp, medecinId);
+                case "secretaires" -> forwardSecretaires(req, resp, medecinId);
+                case "createSecretaire" -> createSecretaire(req, resp, medecinId);
+                case "deleteSecretaire" -> deleteSecretaire(req, resp, medecinId);
                 default -> forwardDashboard(req, resp, medecinId);
             }
         } catch (IllegalArgumentException e) {
             req.setAttribute("error", e.getMessage());
-            forwardDashboard(req, resp, medecinId);
+            if (isSecretaireAction(action)) {
+                forwardSecretaires(req, resp, medecinId);
+            } else {
+                forwardDashboard(req, resp, medecinId);
+            }
         }
     }
 
@@ -76,8 +87,55 @@ public class MedecinServlet extends HttpServlet {
         req.setAttribute("nbPatients", patients.size());
         req.setAttribute("nbRdv", rdvs.size());
         req.setAttribute("nbCertificats", certificats.size());
+        req.setAttribute("secretaires", medecinService.getSecretairesByMedecin(medecinId));
         req.setAttribute("lastLogin", java.time.LocalDateTime.now());
         req.getRequestDispatcher("/jsp/medecin/dashboard.jsp").forward(req, resp);
+    }
+
+    private void createSecretaire(HttpServletRequest req, HttpServletResponse resp, int medecinId)
+            throws ServletException, IOException {
+        String prenom = value(req.getParameter("prenom"));
+        String nom = value(req.getParameter("nom"));
+        String email = value(req.getParameter("email"));
+        String telephone = value(req.getParameter("telephone"));
+        String password = value(req.getParameter("password"));
+        String confirmPassword = value(req.getParameter("confirmPassword"));
+
+        if (prenom.isBlank() || nom.isBlank() || email.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
+            throw new IllegalArgumentException("Tous les champs obligatoires doivent etre renseignes.");
+        }
+        if (!password.equals(confirmPassword)) {
+            throw new IllegalArgumentException("Les mots de passe ne correspondent pas.");
+        }
+        if (password.length() < 8) {
+            throw new IllegalArgumentException("Le mot de passe doit contenir au moins 8 caracteres.");
+        }
+        if (authService.emailExists(email)) {
+            throw new IllegalArgumentException("Cet email existe deja.");
+        }
+
+        authService.registerSecretaire(prenom, nom, email, telephone, password, medecinId);
+        req.setAttribute("message", "Compte secretaire cree avec succes.");
+        forwardSecretaires(req, resp, medecinId);
+    }
+
+
+
+    private void deleteSecretaire(HttpServletRequest req, HttpServletResponse resp, int medecinId)
+            throws ServletException, IOException {
+        String secretaireIdParam = req.getParameter("id");
+        if (secretaireIdParam == null || secretaireIdParam.isBlank()) {
+            throw new IllegalArgumentException("Identifiant secretaire manquant.");
+        }
+        medecinService.deleteSecretaire(medecinId, Integer.parseInt(secretaireIdParam));
+        req.setAttribute("message", "Compte secretaire supprime.");
+        forwardSecretaires(req, resp, medecinId);
+    }
+
+    private void forwardSecretaires(HttpServletRequest req, HttpServletResponse resp, int medecinId)
+            throws ServletException, IOException {
+        req.setAttribute("secretaires", medecinService.getSecretairesByMedecin(medecinId));
+        req.getRequestDispatcher("/jsp/medecin/gererSecretaire.jsp").forward(req, resp);
     }
 
     private void forwardPatients(HttpServletRequest req, HttpServletResponse resp, int medecinId)
@@ -239,5 +297,15 @@ public class MedecinServlet extends HttpServlet {
         }
 
         return null;
+    }
+
+    private String value(String input) {
+        return input == null ? "" : input.trim();
+    }
+
+    private boolean isSecretaireAction(String action) {
+        return "secretaires".equals(action)
+                || "createSecretaire".equals(action)
+                || "deleteSecretaire".equals(action);
     }
 }

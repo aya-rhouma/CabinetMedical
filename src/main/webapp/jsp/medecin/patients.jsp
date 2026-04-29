@@ -17,6 +17,7 @@
 
     String prenomMedecin = medecin.getPrenom();
     String nomMedecin = medecin.getNom();
+    String initials = (prenomMedecin.substring(0, 1) + nomMedecin.substring(0, 1)).toUpperCase();
 %>
 
 <!DOCTYPE html>
@@ -30,15 +31,186 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/medecin.css">
-
     <style>
+        /* ============================================
+           VARIABLES CSS
+           ============================================ */
+        :root {
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #0f172a;
+            --gray: #64748b;
+            --light-gray: #f8fafc;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        /* ============================================
+           NAVIGATION
+           ============================================ */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-decoration: none;
+        }
+
+        .logo i {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--gray);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white !important;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark);
+        }
+
+        /* ============================================
+           CONTAINER
+           ============================================ */
+        .dossier-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* ============================================
+           CARD
+           ============================================ */
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            background: linear-gradient(135deg, #f8fafc, #ffffff);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .card-header h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-header h2 i {
+            color: var(--primary);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .badge-count {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* ============================================
+           SEARCH BAR
+           ============================================ */
         .search-bar {
             display: flex;
             gap: 1rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0;
             flex-wrap: wrap;
+            align-items: flex-end;
         }
 
         .search-input {
@@ -58,6 +230,85 @@
             box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
         }
 
+        .btn-filter {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-filter:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-reset {
+            background: var(--gray);
+            margin-left: 0.5rem;
+        }
+
+        .btn-reset:hover {
+            background: #475569;
+        }
+
+        /* ============================================
+           TABLE
+           ============================================ */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .certificats-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .certificats-table thead th {
+            text-align: left;
+            padding: 1rem;
+            background: var(--light-gray);
+            font-weight: 600;
+            color: var(--dark);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .certificats-table tbody td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--gray);
+            vertical-align: middle;
+        }
+
+        .certificats-table tbody tr:hover {
+            background: var(--light-gray);
+        }
+
+        .id-badge {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            background: var(--light-gray);
+            color: var(--primary);
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        /* ============================================
+           PATIENT INFO
+           ============================================ */
+        .patient-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
         .patient-avatar-small {
             width: 40px;
             height: 40px;
@@ -68,8 +319,22 @@
             justify-content: center;
             color: white;
             font-size: 1rem;
+            font-weight: 600;
         }
 
+        .patient-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .patient-details strong {
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+
+        /* ============================================
+           ACTION ICONS
+           ============================================ */
         .action-icons {
             display: flex;
             gap: 0.5rem;
@@ -94,16 +359,138 @@
             transform: translateY(-2px);
         }
 
-        .action-icon.danger:hover {
-            background: var(--danger);
+        /* ============================================
+           EMPTY STATE
+           ============================================ */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
         }
 
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--light-gray);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .empty-icon i {
+            font-size: 2.5rem;
+            color: var(--gray);
+        }
+
+        .empty-state h3 {
+            font-size: 1.2rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
         @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 1rem;
+                gap: 1rem;
+                box-shadow: var(--shadow);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .dossier-container {
+                padding: 1rem;
+                margin: 1rem auto;
+            }
+
+            .search-bar {
+                flex-direction: column;
+            }
+
+            .search-input {
+                width: 100%;
+            }
+
+            .btn-filter, .btn-reset {
+                width: 100%;
+                margin: 0.25rem 0;
+            }
+
+            .btn-reset {
+                margin-left: 0;
+            }
+
             .patient-info {
                 flex-direction: column;
-                align-items: flex-start;
+                text-align: center;
+            }
+
+            .action-icons {
+                justify-content: center;
             }
         }
+
+        /* ============================================
+           ANIMATIONS
+           ============================================ */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.15s; }
     </style>
 </head>
 <body>
@@ -196,12 +583,12 @@
                                     <i class="fas fa-arrow-left"></i> Retour au dashboard
                                 </a>
                             </div>
-                            </thead>
+                            </td>
                             </thead>
                                 <% } else {
                             for (Patient p : patients) {
-                                String initials = p.getPrenom().substring(0, 1).toUpperCase() +
-                                                 p.getNom().substring(0, 1).toUpperCase();
+                                String patientInitials = p.getPrenom().substring(0, 1).toUpperCase() +
+                                                         p.getNom().substring(0, 1).toUpperCase();
                         %>
                     <tr>
                         <td data-label="ID">
@@ -210,7 +597,7 @@
                         <td data-label="Patient">
                             <div class="patient-info">
                                 <div class="patient-avatar-small">
-                                    <%= initials %>
+                                    <%= patientInitials %>
                                 </div>
                                 <div class="patient-details">
                                     <strong><%= p.getPrenom() %> <%= p.getNom() %></strong>
@@ -251,15 +638,9 @@
     </div>
 </div>
 
-<!-- Scripts -->
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
-    AOS.init({
-        duration: 800,
-        once: true,
-        offset: 100,
-        easing: 'ease-in-out'
-    });
+    AOS.init({ duration: 900, once: true, offset: 80, easing: 'ease-in-out' });
 
     const menuToggle = document.querySelector('.menu-toggle');
     const navLinks = document.querySelector('.nav-links');
@@ -267,13 +648,8 @@
         menuToggle.addEventListener('click', () => {
             navLinks.classList.toggle('active');
             const icon = menuToggle.querySelector('i');
-            if (icon.classList.contains('fa-bars')) {
-                icon.classList.remove('fa-bars');
-                icon.classList.add('fa-times');
-            } else {
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
-            }
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
         });
     }
 </script>
