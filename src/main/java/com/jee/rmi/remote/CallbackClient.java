@@ -1,4 +1,6 @@
 package com.jee.rmi.remote;
 
-public class CallbackClient {
+@FunctionalInterface
+public interface CallbackClient {
+    void onNotification(String message);
 }
