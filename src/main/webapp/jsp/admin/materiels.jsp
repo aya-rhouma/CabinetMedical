@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="<%= ctx %>/css/secretaire.css">
 </head>
 
-<body>
+<body class="role-admin">
 
 <!-- 🔷 NAVBAR -->
 <nav class="navbar">
@@ -155,14 +155,69 @@
 </main>
 
 
-<!-- 🔷 MODALS (inchangés) -->
-<!-- (tu gardes tes modals tels quels, rien à changer) -->
+<!-- 🔷 MODAL AJOUT -->
+<div class="modal-overlay" id="addMaterielModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div class="modal-icon mi-cyan"><i class="fas fa-box-open"></i></div>
+            <div>
+                <div class="modal-title">Ajouter un matériel</div>
+                <div class="modal-subtitle">Nouveau stock</div>
+            </div>
+        </div>
+        <form method="post" action="<%= ctx %>/admin">
+            <input type="hidden" name="action" value="addMateriel">
+            <div class="form-grid-2">
+                <input type="text"   name="nom"          placeholder="Nom du matériel" class="form-control" required style="grid-column:1/-1;">
+                <input type="number" name="quantite"     placeholder="Quantité"        class="form-control" required min="0">
+                <input type="number" name="seuilAlerte"  placeholder="Seuil d'alerte"  class="form-control" required min="0">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary"><i class="fas fa-save"></i> Enregistrer</button>
+                <button type="button"
+                        onclick="document.getElementById('addMaterielModal').classList.remove('open')"
+                        class="btn btn-ghost">Annuler</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 🔷 MODAL EDITION -->
+<div class="modal-overlay" id="editMaterielModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div class="modal-icon mi-blue"><i class="fas fa-edit"></i></div>
+            <div>
+                <div class="modal-title">Modifier un matériel</div>
+            </div>
+        </div>
+        <form method="post" action="<%= ctx %>/admin">
+            <input type="hidden" name="action" value="updateMateriel">
+            <input type="hidden" name="id"     id="editId">
+            <div class="form-grid-2">
+                <input type="text"   name="nom"         id="editNom"   placeholder="Nom du matériel" class="form-control" required style="grid-column:1/-1;">
+                <input type="number" name="quantite"    id="editQte"   placeholder="Quantité"        class="form-control" required min="0">
+                <input type="number" name="seuilAlerte" id="editSeuil" placeholder="Seuil d'alerte"  class="form-control" required min="0">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary"><i class="fas fa-save"></i> Mettre à jour</button>
+                <button type="button"
+                        onclick="document.getElementById('editMaterielModal').classList.remove('open')"
+                        class="btn btn-ghost">Annuler</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 
 <!-- 🔷 SCRIPT -->
 <script>
     document.getElementById('menuToggle')?.addEventListener('click', () => {
         document.getElementById('navLinks').classList.toggle('active');
+    });
+
+    document.querySelectorAll('.modal-overlay').forEach(m => {
+        m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
     });
 
     function openEditModal(id, nom, qte, seuil) {

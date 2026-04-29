@@ -24,7 +24,7 @@
     <link rel="stylesheet" href="<%= ctx %>/css/secretaire.css">
 </head>
 
-<body>
+<body class="role-admin">
 
 <!-- 🔷 NAVBAR -->
 <nav class="navbar">
