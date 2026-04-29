@@ -3,35 +3,33 @@
 <%@ page import="com.jee.entity.CertificatMedical" %>
 <%@ page import="com.jee.entity.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
 <%
     List<RendezVous> rdvPlanifies = (List<RendezVous>) request.getAttribute("rdvPlanifies");
-    List<RendezVous> rdvPasses = (List<RendezVous>) request.getAttribute("rdvPasses");
-    List<String> notifications = (List<String>) request.getAttribute("notifications");
+    List<RendezVous> rdvPasses    = (List<RendezVous>) request.getAttribute("rdvPasses");
+    List<String> notifications    = (List<String>) request.getAttribute("notifications");
     List<CertificatMedical> demandesCertificats = (List<CertificatMedical>) request.getAttribute("demandesCertificats");
     User patient = (User) session.getAttribute("user");
-    String contextPath = request.getContextPath();
+    String ctx = request.getContextPath();
 
     if (patient == null) {
-        response.sendRedirect(contextPath + "/jsp/auth/login.jsp");
+        response.sendRedirect(ctx + "/jsp/auth/login.jsp");
         return;
     }
 
     String prenom = patient.getPrenom();
-    String nom = patient.getNom();
-    String initials = (prenom.substring(0, 1) + (nom.isBlank() ? "P" : nom.substring(0, 1))).toUpperCase();
-    int nbPlanifies = rdvPlanifies == null ? 0 : rdvPlanifies.size();
-    int nbPasses = rdvPasses == null ? 0 : rdvPasses.size();
-    int nbDemandes = demandesCertificats == null ? 0 : demandesCertificats.size();
+    String nom    = patient.getNom();
+    String initials = (prenom.substring(0,1) + (nom.isBlank() ? "P" : nom.substring(0,1))).toUpperCase();
+    int nbPlanifies = rdvPlanifies  == null ? 0 : rdvPlanifies.size();
+    int nbPasses    = rdvPasses     == null ? 0 : rdvPasses.size();
+    int nbDemandes  = demandesCertificats == null ? 0 : demandesCertificats.size();
 %>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Dashboard Patient - MediCare Plus">
     <title>Dashboard Patient - MediCare Plus</title>
+<<<<<<< Updated upstream
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -597,40 +595,71 @@
         </div>
         <div class="menu-toggle">
             <i class="fas fa-bars"></i>
+=======
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="<%= ctx %>/css/medecin.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-container">
+        <a class="logo" href="<%= ctx %>/"><i class="fas fa-heartbeat"></i><span>MediCare Plus</span></a>
+        <div class="nav-links">
+            <a href="<%= ctx %>/patient" class="active">Dashboard</a>
+            <a href="<%= ctx %>/patient?action=reservationForm">Prendre RDV</a>
+            <a href="<%= ctx %>/patient?action=mesRdv">Mes RDV</a>
+            <a href="<%= ctx %>/patient?action=demandeCertificat">Certificats</a>
+            <a href="<%= ctx %>/auth/logout" class="btn-login"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+>>>>>>> Stashed changes
         </div>
+        <div class="menu-toggle"><i class="fas fa-bars"></i></div>
     </div>
 </nav>
 
-<!-- Main Content -->
 <main class="dashboard-main">
+<<<<<<< Updated upstream
     <!-- Hero Panel -->
     <div class="hero-panel" data-aos="fade-up">
         <h1>Bonjour, <span class="gradient-text"><%= prenom %> <%= nom %></span></h1>
         <span class="role-badge">
             <i class="fas fa-user-circle"></i> Patient
         </span>
+=======
+
+    <% if (request.getAttribute("error") != null) { %>
+    <div style="background:#fee2e2;border-left:4px solid #ef4444;padding:1rem 1.5rem;border-radius:12px;margin-bottom:1.5rem;color:#991b1b;">
+        <i class="fas fa-exclamation-circle"></i> <%= request.getAttribute("error") %>
+    </div>
+    <% } %>
+
+    <section class="hero-panel" data-aos="fade-up">
+        <h1>Bonjour, <span class="gradient-text"><%= prenom %> <%= nom %></span></h1>
+        <span class="role-badge"><i class="fas fa-user-circle"></i> Patient</span>
+>>>>>>> Stashed changes
         <div class="avatar"><%= initials %></div>
     </div>
 
-    <!-- Statistiques -->
-    <div class="grid-3">
-        <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
+    <div class="grid-3" data-aos="fade-up" data-aos-delay="100">
+        <div class="stat-card">
             <i class="fa-solid fa-calendar-check"></i>
             <h3>RDV planifiés</h3>
             <div class="value"><%= nbPlanifies %></div>
         </div>
-        <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
+        <div class="stat-card">
             <i class="fa-solid fa-clock-rotate-left"></i>
             <h3>RDV passés</h3>
             <div class="value"><%= nbPasses %></div>
         </div>
-        <div class="stat-card" data-aos="fade-up" data-aos-delay="300">
+        <div class="stat-card">
             <i class="fa-solid fa-file-medical"></i>
-            <h3>Demandes certificats</h3>
+            <h3>Certificats</h3>
             <div class="value"><%= nbDemandes %></div>
         </div>
     </div>
 
+<<<<<<< Updated upstream
     <!-- Actions Rapides -->
     <div class="grid-4">
         <a class="action-card" href="<%= contextPath %>/patient?action=reservationForm" data-aos="fade-up" data-aos-delay="400">
@@ -638,19 +667,32 @@
             <span class="title">Réserver RDV</span>
         </a>
         <a class="action-card" href="<%= contextPath %>/patient?action=mesRdv" data-aos="fade-up" data-aos-delay="500">
+=======
+    <div class="grid-4" data-aos="fade-up" data-aos-delay="200">
+        <a class="action-card" href="<%= ctx %>/patient?action=reservationForm">
+            <i class="fa-solid fa-calendar-plus"></i>
+            <span class="title">Réserver RDV</span>
+        </a>
+        <a class="action-card" href="<%= ctx %>/patient?action=mesRdv">
+>>>>>>> Stashed changes
             <i class="fa-solid fa-list-check"></i>
             <span class="title">Mes RDV</span>
         </a>
-        <a class="action-card" href="#notifications" data-aos="fade-up" data-aos-delay="600">
+        <a class="action-card" href="#notifications">
             <i class="fa-solid fa-bell"></i>
             <span class="title">Notifications</span>
         </a>
+<<<<<<< Updated upstream
         <a class="action-card" href="<%= contextPath %>/patient?action=demandeCertificat" data-aos="fade-up" data-aos-delay="700">
+=======
+        <a class="action-card" href="<%= ctx %>/patient?action=demandeCertificat">
+>>>>>>> Stashed changes
             <i class="fa-solid fa-file-circle-plus"></i>
             <span class="title">Certificats</span>
         </a>
     </div>
 
+<<<<<<< Updated upstream
     <!-- Alert Error -->
     <% if (request.getAttribute("error") != null) { %>
     <div class="alert alert-danger" data-aos="fade-up">
@@ -661,10 +703,15 @@
 
     <!-- Section Notifications -->
     <div class="card" id="notifications" data-aos="fade-up">
+=======
+    <!-- Notifications -->
+    <div class="card" id="notifications" data-aos="fade-up" data-aos-delay="300">
+>>>>>>> Stashed changes
         <div class="card-header">
             <h2><i class="fas fa-bell"></i> Notifications</h2>
         </div>
         <div class="card-body">
+<<<<<<< Updated upstream
             <div id="notification-empty" class="empty-state <%= (notifications != null && !notifications.isEmpty()) ? "d-none" : "" %>">
                 <div class="empty-icon"><i class="fas fa-inbox"></i></div>
                 <h3>Aucune notification</h3>
@@ -680,10 +727,29 @@
             </ul>
         </div>
     </div>
+=======
+            <div id="notification-empty" style="<%= (notifications == null || notifications.isEmpty()) ? "" : "display:none;" %>">
+                <div class="empty-state" style="padding:1.5rem;">
+                    <div class="empty-icon"><i class="fas fa-inbox"></i></div>
+                    <h3>Aucune nouvelle notification</h3>
+                </div>
+            </div>
+            <ul id="notification-list" style="list-style:none;<%= (notifications == null || notifications.isEmpty()) ? "display:none;" : "" %>">
+                <% if (notifications != null) { for (String n : notifications) { %>
+                <li style="padding:.75rem;background:#f0f9ff;margin-bottom:.5rem;border-radius:10px;border-left:3px solid var(--primary);">
+                    <i class="fas fa-circle" style="font-size:.6rem;color:var(--primary);margin-right:.5rem;"></i> <%= n %>
+                </li>
+                <% } } %>
+            </ul>
+        </div>
+    </div>
+
+>>>>>>> Stashed changes
 </main>
 
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
+<<<<<<< Updated upstream
     AOS.init({ duration: 900, once: true, offset: 80, easing: 'ease-in-out' });
 
     const menuToggle = document.querySelector('.menu-toggle');
@@ -701,13 +767,20 @@
             }
         });
     }
+=======
+    AOS.init({ duration: 800, once: true });
+    document.querySelector('.menu-toggle')?.addEventListener('click', () => {
+        document.querySelector('.nav-links').classList.toggle('active');
+    });
+>>>>>>> Stashed changes
 
     // Notification polling
     (function() {
-        const ctx = '<%= contextPath %>';
+        const ctx = '<%= ctx %>';
         const list = document.getElementById('notification-list');
         const empty = document.getElementById('notification-empty');
 
+<<<<<<< Updated upstream
         function appendNotifications(items) {
             if (!items || !items.length) return;
             items.forEach((message) => {
@@ -726,8 +799,25 @@
                 const data = await response.json();
                 appendNotifications(data.notifications || []);
             } catch (e) {}
+=======
+        async function pollNotifications() {
+            try {
+                const res = await fetch(ctx + '/patient?action=notifications', { cache: 'no-store' });
+                if (!res.ok) return;
+                const data = await res.json();
+                if (data.notifications && data.notifications.length > 0) {
+                    data.notifications.forEach(msg => {
+                        const li = document.createElement('li');
+                        li.style.cssText = 'padding:.75rem;background:#f0f9ff;margin-bottom:.5rem;border-radius:10px;border-left:3px solid var(--primary);';
+                        li.innerHTML = '<i class="fas fa-circle" style="font-size:.6rem;color:var(--primary);margin-right:.5rem;"></i> ' + msg;
+                        list.prepend(li);
+                    });
+                    list.style.display = '';
+                    empty.style.display = 'none';
+                }
+            } catch(e) {}
+>>>>>>> Stashed changes
         }
-
         setInterval(pollNotifications, 8000);
     })();
 </script>

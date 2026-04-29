@@ -38,6 +38,10 @@ public class RendezVous implements Serializable {
     @Column(name = "statut")
     private String statut;
 
+    @ColumnDefault("false")
+    @Column(name = "paye", nullable = false)
+    private boolean paye = false;
+
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "created_at")
     private Instant createdAt;
@@ -104,6 +108,14 @@ public class RendezVous implements Serializable {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public boolean isPaye() {
+        return paye;
+    }
+
+    public void setPaye(boolean paye) {
+        this.paye = paye;
     }
 
 }

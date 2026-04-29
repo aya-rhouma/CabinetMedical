@@ -6,6 +6,7 @@
 <%
     User patient = (User) session.getAttribute("user");
     List<RendezVous> rdvPlanifies = (List<RendezVous>) request.getAttribute("rdvPlanifies");
+<<<<<<< Updated upstream
     List<RendezVous> rdvPasses = (List<RendezVous>) request.getAttribute("rdvPasses");
     String contextPath = request.getContextPath();
 
@@ -17,6 +18,10 @@
     String prenom = patient.getPrenom();
     String nom = patient.getNom();
     String initials = (prenom.substring(0, 1) + (nom.isBlank() ? "P" : nom.substring(0, 1))).toUpperCase();
+=======
+    List<RendezVous> rdvPasses    = (List<RendezVous>) request.getAttribute("rdvPasses");
+    String ctx = request.getContextPath();
+>>>>>>> Stashed changes
 %>
 
 <!DOCTYPE html>
@@ -24,6 +29,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< Updated upstream
     <meta name="description" content="Mes rendez-vous médicaux - MediCare Plus">
     <title>Mes Rendez-vous - MediCare Plus</title>
 
@@ -438,10 +444,18 @@
         .hero-panel { animation-delay: 0s; }
         .section-card { animation-delay: 0.1s; }
     </style>
+=======
+    <title>Mes Rendez-vous - MediCare Plus</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="<%= ctx %>/css/medecin.css">
+>>>>>>> Stashed changes
 </head>
 
 <body>
 
+<<<<<<< Updated upstream
 <!-- Navigation -->
 <nav class="navbar">
     <div class="nav-container">
@@ -598,3 +612,155 @@
 </script>
 </body>
 </html>
+=======
+<nav class="navbar">
+    <div class="nav-container">
+        <a class="logo" href="<%= ctx %>/"><i class="fas fa-heartbeat"></i><span>MediCare Plus</span></a>
+        <div class="nav-links">
+            <a href="<%= ctx %>/patient">Dashboard</a>
+            <a href="<%= ctx %>/patient?action=reservationForm">Prendre RDV</a>
+            <a href="<%= ctx %>/patient?action=mesRdv" class="active">Mes RDV</a>
+            <a href="<%= ctx %>/patient?action=demandeCertificat">Certificats</a>
+            <a href="<%= ctx %>/auth/logout" class="btn-login"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+        </div>
+        <div class="menu-toggle"><i class="fas fa-bars"></i></div>
+    </div>
+</nav>
+
+<main class="dashboard-main">
+    <div class="page-header" data-aos="fade-up">
+        <div class="breadcrumb">
+            <a href="<%= ctx %>/patient">Dashboard</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Mes Rendez-vous</span>
+        </div>
+        <h1><i class="fas fa-calendar-check"></i> Mes Rendez-vous</h1>
+    </div>
+
+    <!-- RDV Planifiés -->
+    <div class="card" data-aos="fade-up" data-aos-delay="100">
+        <div class="card-header">
+            <h2>
+                <i class="fas fa-calendar-check"></i> RDV à venir
+                <span class="badge-count"><%= rdvPlanifies != null ? rdvPlanifies.size() : 0 %></span>
+            </h2>
+            <a href="<%= ctx %>/patient?action=reservationForm" class="btn-primary">
+                <i class="fas fa-plus"></i> Nouveau RDV
+            </a>
+        </div>
+        <div class="card-body">
+            <% if (rdvPlanifies == null || rdvPlanifies.isEmpty()) { %>
+            <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-calendar-times"></i></div>
+                <h3>Aucun RDV planifié</h3>
+                <p>Prenez votre premier rendez-vous dès maintenant.</p>
+            </div>
+            <% } else { %>
+            <div class="table-responsive">
+                <table class="certificats-table">
+                    <thead>
+                        <tr><th>Date</th><th>Horaire</th><th>Médecin</th><th>Statut</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody>
+                    <% for (RendezVous r : rdvPlanifies) { %>
+                    <tr>
+                        <td><strong><%= r.getDateRdv() %></strong></td>
+                        <td style="color:#64748b;">
+                            <i class="fas fa-clock" style="color:var(--primary);"></i>
+                            <%= r.getHeureDebut() %> – <%= r.getHeureFin() %>
+                        </td>
+                        <td>
+                            <div class="patient-info">
+                                <div class="patient-avatar"><i class="fas fa-user-doctor"></i></div>
+                                <div class="patient-details">
+                                    <strong>Dr <%= r.getMedecin().getPrenom() %> <%= r.getMedecin().getNom() %></strong>
+                                    <small><%= r.getMedecin().getSpecialite() %></small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span style="background:#fef3c7;color:#92400e;padding:.2rem .7rem;border-radius:50px;font-size:.75rem;font-weight:600;">
+                                <i class="fas fa-clock"></i> <%= r.getStatut() != null ? r.getStatut() : "PLANIFIÉ" %>
+                            </span>
+                        </td>
+                        <td>
+                            <form method="post" action="<%= ctx %>/patient" style="margin:0;"
+                                  onsubmit="return confirm('Annuler ce rendez-vous ?')">
+                                <input type="hidden" name="action" value="annulerRdv">
+                                <input type="hidden" name="rdvId" value="<%= r.getId() %>">
+                                <button type="submit" class="btn-action" style="background:#fee2e2;color:#991b1b;">
+                                    <i class="fas fa-times"></i> Annuler
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    <% } %>
+                    </tbody>
+                </table>
+            </div>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Historique -->
+    <div class="card" data-aos="fade-up" data-aos-delay="200">
+        <div class="card-header">
+            <h2>
+                <i class="fas fa-history"></i> Historique
+                <span class="badge-count"><%= rdvPasses != null ? rdvPasses.size() : 0 %></span>
+            </h2>
+        </div>
+        <div class="card-body">
+            <% if (rdvPasses == null || rdvPasses.isEmpty()) { %>
+            <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-clock-rotate-left"></i></div>
+                <h3>Aucun historique</h3>
+            </div>
+            <% } else { %>
+            <div class="table-responsive">
+                <table class="certificats-table">
+                    <thead>
+                        <tr><th>Date</th><th>Horaire</th><th>Médecin</th><th>Statut</th></tr>
+                    </thead>
+                    <tbody>
+                    <% for (RendezVous r : rdvPasses) { %>
+                    <tr>
+                        <td><strong><%= r.getDateRdv() %></strong></td>
+                        <td style="color:#64748b;">
+                            <i class="fas fa-clock" style="color:var(--primary);"></i>
+                            <%= r.getHeureDebut() %> – <%= r.getHeureFin() %>
+                        </td>
+                        <td>
+                            <div class="patient-info">
+                                <div class="patient-avatar"><i class="fas fa-user-doctor"></i></div>
+                                <div class="patient-details">
+                                    <strong>Dr <%= r.getMedecin().getPrenom() %> <%= r.getMedecin().getNom() %></strong>
+                                    <small><%= r.getMedecin().getSpecialite() %></small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span style="background:#d1fae5;color:#065f46;padding:.2rem .7rem;border-radius:50px;font-size:.75rem;font-weight:600;">
+                                <i class="fas fa-check-double"></i> <%= r.getStatut() != null ? r.getStatut() : "EFFECTUÉ" %>
+                            </span>
+                        </td>
+                    </tr>
+                    <% } %>
+                    </tbody>
+                </table>
+            </div>
+            <% } %>
+        </div>
+    </div>
+</main>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init({ duration: 800, once: true });
+    document.querySelector('.menu-toggle')?.addEventListener('click', () => {
+        document.querySelector('.nav-links').classList.toggle('active');
+    });
+</script>
+</body>
+</html>
+>>>>>>> Stashed changes

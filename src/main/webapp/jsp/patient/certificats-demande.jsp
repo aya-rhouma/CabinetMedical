@@ -3,8 +3,8 @@
 <%@ page import="com.jee.entity.CertificatMedical" %>
 <%@ page import="com.jee.entity.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
 <%
+<<<<<<< Updated upstream
     User patient = (User) session.getAttribute("user");
     List<Medecin> medecins = (List<Medecin>) request.getAttribute("medecinsDisponibles");
     List<CertificatMedical> certificatsPatient = (List<CertificatMedical>) request.getAttribute("certificatsPatient");
@@ -23,13 +23,20 @@
     String prenom = patient.getPrenom();
     String nom = patient.getNom();
     String initials = (prenom.substring(0, 1) + (nom.isBlank() ? "P" : nom.substring(0, 1))).toUpperCase();
+=======
+    List<Medecin> medecins = (List<Medecin>) request.getAttribute("medecinsDisponibles");
+    List<CertificatMedical> certificatsPatient = (List<CertificatMedical>) request.getAttribute("certificatsPatient");
+    if (certificatsPatient == null)
+        certificatsPatient = (List<CertificatMedical>) request.getAttribute("demandesCertificats");
+    String ctx = request.getContextPath();
+>>>>>>> Stashed changes
 %>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< Updated upstream
     <meta name="description" content="Demande de certificats médicaux - MediCare Plus">
     <title>Certificats médicaux - MediCare Plus</title>
 
@@ -389,10 +396,17 @@
         .section-card:nth-child(1) { animation-delay: 0.1s; }
         .section-card:nth-child(2) { animation-delay: 0.2s; }
     </style>
+=======
+    <title>Certificats médicaux - MediCare Plus</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="<%= ctx %>/css/medecin.css">
+>>>>>>> Stashed changes
 </head>
-
 <body>
 
+<<<<<<< Updated upstream
 <!-- Navigation -->
 <nav class="navbar">
     <div class="nav-container">
@@ -411,10 +425,23 @@
         </div>
         <div class="menu-toggle">
             <i class="fas fa-bars"></i>
+=======
+<nav class="navbar">
+    <div class="nav-container">
+        <a class="logo" href="<%= ctx %>/"><i class="fas fa-heartbeat"></i><span>MediCare Plus</span></a>
+        <div class="nav-links">
+            <a href="<%= ctx %>/patient">Dashboard</a>
+            <a href="<%= ctx %>/patient?action=reservationForm">Prendre RDV</a>
+            <a href="<%= ctx %>/patient?action=mesRdv">Mes RDV</a>
+            <a href="<%= ctx %>/patient?action=demandeCertificat" class="active">Certificats</a>
+            <a href="<%= ctx %>/auth/logout" class="btn-login"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+>>>>>>> Stashed changes
         </div>
+        <div class="menu-toggle"><i class="fas fa-bars"></i></div>
     </div>
 </nav>
 
+<<<<<<< Updated upstream
 <!-- Main Content -->
 <main class="dashboard-main">
     <!-- Demande de certificat -->
@@ -513,12 +540,114 @@
                 <% }} %>
                 </tbody>
             </table>
+=======
+<main class="dashboard-main">
+    <div class="page-header" data-aos="fade-up">
+        <div class="breadcrumb">
+            <a href="<%= ctx %>/patient">Dashboard</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Certificats médicaux</span>
+        </div>
+        <h1><i class="fas fa-file-medical"></i> Certificats médicaux</h1>
+    </div>
+
+    <!-- Formulaire de demande -->
+    <div class="card" data-aos="fade-up" data-aos-delay="100">
+        <div class="card-header">
+            <h2><i class="fas fa-file-circle-plus"></i> Nouvelle demande</h2>
+        </div>
+        <div class="card-body">
+            <form method="post" action="<%= ctx %>/patient">
+                <input type="hidden" name="action" value="demanderCertificat">
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem;">
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-user-doctor"></i> Médecin concerné *</label>
+                        <select name="medecinId" class="form-control" required>
+                            <option value="">-- Choisir un médecin --</option>
+                            <% if (medecins != null) { for (Medecin m : medecins) { %>
+                            <option value="<%= m.getId() %>">
+                                Dr <%= m.getPrenom() %> <%= m.getNom() %> — <%= m.getSpecialite() %>
+                            </option>
+                            <% } } %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-clipboard-list"></i> Motif *</label>
+                        <select name="motif" class="form-control" required>
+                            <option value="repos">Certificat de repos</option>
+                            <option value="sport">Certificat sportif</option>
+                            <option value="scolaire">Certificat scolaire</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="margin-top:1rem;">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-paper-plane"></i> Envoyer la demande
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Historique certificats -->
+    <div class="card" data-aos="fade-up" data-aos-delay="200">
+        <div class="card-header">
+            <h2>
+                <i class="fas fa-list"></i> Mes certificats
+                <span class="badge-count"><%= certificatsPatient != null ? certificatsPatient.size() : 0 %></span>
+            </h2>
+        </div>
+        <div class="card-body">
+            <% if (certificatsPatient == null || certificatsPatient.isEmpty()) { %>
+            <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-file-medical"></i></div>
+                <h3>Aucun certificat demandé</h3>
+                <p>Faites votre première demande ci-dessus.</p>
+            </div>
+            <% } else { %>
+            <div class="table-responsive">
+                <table class="certificats-table">
+                    <thead>
+                        <tr><th>Médecin</th><th>Motif</th><th>Statut</th></tr>
+                    </thead>
+                    <tbody>
+                    <% for (CertificatMedical c : certificatsPatient) {
+                        String statut = c.getStatut() == null ? "EN ATTENTE" : c.getStatut();
+                        String bg = "GENERE".equals(statut) || "APPROUVE".equals(statut) ? "#d1fae5" :
+                                    "REJETE".equals(statut) ? "#fee2e2" : "#fef3c7";
+                        String fg = "GENERE".equals(statut) || "APPROUVE".equals(statut) ? "#065f46" :
+                                    "REJETE".equals(statut) ? "#991b1b" : "#92400e";
+                    %>
+                    <tr>
+                        <td>
+                            <div class="patient-info">
+                                <div class="patient-avatar"><i class="fas fa-user-doctor"></i></div>
+                                <div class="patient-details">
+                                    <strong>Dr <%= c.getMedecin().getPrenom() %> <%= c.getMedecin().getNom() %></strong>
+                                    <small><%= c.getMedecin().getSpecialite() %></small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><%= c.getMotif() %></td>
+                        <td>
+                            <span style="background:<%= bg %>;color:<%= fg %>;padding:.2rem .7rem;border-radius:50px;font-size:.75rem;font-weight:600;">
+                                <%= statut %>
+                            </span>
+                        </td>
+                    </tr>
+                    <% } %>
+                    </tbody>
+                </table>
+            </div>
+            <% } %>
+>>>>>>> Stashed changes
         </div>
     </div>
 </main>
 
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
+<<<<<<< Updated upstream
     AOS.init({ duration: 900, once: true, offset: 80, easing: 'ease-in-out' });
 
     const menuToggle = document.querySelector('.menu-toggle');
@@ -536,6 +665,12 @@
             }
         });
     }
+=======
+    AOS.init({ duration: 800, once: true });
+    document.querySelector('.menu-toggle')?.addEventListener('click', () => {
+        document.querySelector('.nav-links').classList.toggle('active');
+    });
+>>>>>>> Stashed changes
 </script>
 </body>
 </html>
