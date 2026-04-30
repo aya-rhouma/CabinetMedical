@@ -275,12 +275,14 @@
             color: transparent;
         }
 
-        /* Actions Grid */
+        /* Actions Grid - VERSION CENTREE */
         .actions-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            display: flex;
+            justify-content: center;
+            align-items: center;
             gap: 1.5rem;
             margin-bottom: 2rem;
+            flex-wrap: wrap;
         }
 
         .action-card {
@@ -299,6 +301,8 @@
             position: relative;
             overflow: hidden;
             cursor: pointer;
+            flex: 0 1 auto;
+            min-width: 180px;
         }
 
         .action-card::before {
@@ -444,7 +448,7 @@
 
         /* Responsive */
         @media (max-width: 1024px) {
-            .stats-grid, .actions-grid {
+            .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
@@ -479,12 +483,19 @@
                 height: 60px;
                 font-size: 1.5rem;
             }
-            .stats-grid, .actions-grid {
+            .stats-grid {
                 grid-template-columns: 1fr;
                 gap: 1rem;
             }
             .stat-card .value {
                 font-size: 2rem;
+            }
+            .actions-grid {
+                gap: 1rem;
+            }
+            .action-card {
+                min-width: 160px;
+                padding: 1rem;
             }
             .notification-widget {
                 bottom: 1rem;
@@ -516,7 +527,6 @@
         .action-card:nth-child(1) { animation-delay: 0.5s; }
         .action-card:nth-child(2) { animation-delay: 0.6s; }
         .action-card:nth-child(3) { animation-delay: 0.7s; }
-        .action-card:nth-child(4) { animation-delay: 0.8s; }
         .hero-panel { animation-delay: 0s; }
     </style>
 </head>
@@ -583,7 +593,7 @@
         </div>
     </div>
 
-    <!-- Actions -->
+    <!-- Actions - Version centrée avec 3 éléments -->
     <div class="actions-grid">
         <a class="action-card" href="<%= ctx %>/patient?action=reservationForm">
             <i class="fas fa-calendar-plus"></i>
@@ -596,10 +606,6 @@
         <a class="action-card" href="<%= ctx %>/patient?action=demandeCertificat">
             <i class="fas fa-file-medical"></i>
             <span class="title">Demander un certificat</span>
-        </a>
-        <a class="action-card" href="<%= ctx %>/patient?action=mesDossiers">
-            <i class="fas fa-folder-open"></i>
-            <span class="title">Dossier médical</span>
         </a>
     </div>
 </main>

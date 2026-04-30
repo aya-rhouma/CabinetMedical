@@ -469,6 +469,7 @@
 
         <div class="nav-links" id="navLinks">
             <a href="<%= contextPath %>/patient">Dashboard</a>
+            <a href="<%= contextPath %>/patient?action=reservationForm" class="active">Prendre RDV</a>
             <a href="<%= contextPath %>/patient?action=mesRdv">Mes RDV</a>
             <a href="<%= contextPath %>/patient?action=demandeCertificat">Certificats</a>
             <a href="<%= contextPath %>/auth/logout" class="btn-logout">
