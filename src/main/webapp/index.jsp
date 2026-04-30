@@ -458,6 +458,24 @@
             color: var(--muted);
         }
 
+        /* Style pour le message d'information initial */
+        .info-message {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px;
+            background: #fff;
+            border-radius: 24px;
+            color: var(--muted);
+            font-size: 16px;
+        }
+
+        .info-message i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: var(--primary);
+            display: block;
+        }
+
         /* ========== SERVICES ========== */
         .services-grid {
             display: grid;
@@ -839,62 +857,14 @@
             </button>
         </div>
 
-        <div class="doctors-grid" id="doctorsGrid" data-aos="fade-up" data-aos-delay="200">
-            <% if (medecins.isEmpty()) { %>
-            <div class="empty-state">Aucun médecin disponible.</div>
-            <% } else {
-                for (int i = 0; i < medecins.size(); i++) {
-                    Medecin medecin = medecins.get(i);
-                    String prenom = medecin.getPrenom() == null ? "" : medecin.getPrenom().trim();
-                    String nom = medecin.getNom() == null ? "" : medecin.getNom().trim();
-                    String nomComplet = ("Dr. " + prenom + " " + nom).trim();
-                    String specialite = medecin.getSpecialite() == null || medecin.getSpecialite().isBlank() ? "Généraliste" : medecin.getSpecialite();
-                    String experience = medecin.getExperience() == null || medecin.getExperience().isBlank() ? "N/A" : medecin.getExperience();
-                    String telephone = medecin.getTelephone() == null || medecin.getTelephone().isBlank() ? "Non renseigné" : medecin.getTelephone();
-                    String email = medecin.getEmail() == null || medecin.getEmail().isBlank() ? "Non renseigné" : medecin.getEmail();
-
-                    String statusClass;
-                    String statusLabel;
-                    switch (i % 3) {
-                        case 1:
-                            statusClass = "limited";
-                            statusLabel = "Places limitées";
-                            break;
-                        case 2:
-                            statusClass = "unavailable";
-                            statusLabel = "Indisponible";
-                            break;
-                        default:
-                            statusClass = "available";
-                            statusLabel = "Disponible";
-                    }
-            %>
-            <article class="doctor-card"
-                     data-specialty="<%= specialite %>"
-                     data-status="<%= statusClass %>"
-                     data-name="<%= nomComplet.toLowerCase() %>">
-                <div class="doctor-top">
-                    <div class="doctor-avatar"><i class="fas fa-user-doctor"></i></div>
-                    <h3 class="doctor-name"><%= nomComplet %></h3>
-                    <div class="doctor-specialty"><%= specialite %></div>
-                    <div class="doctor-status <%= statusClass %>"><%= statusLabel %></div>
-                </div>
-
-                <div class="doctor-body">
-                    <ul class="doctor-meta">
-                        <li><i class="fas fa-briefcase-medical"></i> Expérience : <%= experience %></li>
-                        <li><i class="fas fa-phone"></i> <%= telephone %></li>
-                        <li><i class="fas fa-envelope"></i> <%= email %></li>
-                    </ul>
-
-                    <div class="doctor-footer">
-                        <a class="doctor-action" href="${pageContext.request.contextPath}/jsp/auth/login.jsp?role=patient">
-                            <i class="fas fa-calendar-plus"></i> Prendre rendez-vous
-                        </a>
-                    </div>
-                </div>
-            </article>
-            <% }} %>
+        <!-- Conteneur pour la liste des médecins (initialement vide) -->
+        <div class="doctors-grid" id="doctorsGrid">
+            <!-- Message d'information initial -->
+            <div class="info-message" id="initialMessage">
+                <i class="fas fa-filter-circle-plus"></i>
+                <h3 style="margin-bottom: 8px;">Filtrez les médecins</h3>
+                <p style="margin: 0;">Sélectionnez des critères et cliquez sur "Appliquer" pour afficher la liste des médecins.</p>
+            </div>
         </div>
     </div>
 </section>
@@ -1076,7 +1046,76 @@
             return;
         }
 
-        const cards = Array.from(grid.querySelectorAll('.doctor-card'));
+        // Stocker les cartes des médecins générées par JSP (cachées initialement)
+        let cards = [];
+        let doctorsListLoaded = false;
+
+        // Fonction pour construire les cartes des médecins à partir des données JSP
+        function buildDoctorsList() {
+            if (doctorsListLoaded) return;
+
+            const doctorsHtml = `
+                <% if (!medecins.isEmpty()) {
+                    for (int i = 0; i < medecins.size(); i++) {
+                        Medecin medecin = medecins.get(i);
+                        String prenom = medecin.getPrenom() == null ? "" : medecin.getPrenom().trim();
+                        String nom = medecin.getNom() == null ? "" : medecin.getNom().trim();
+                        String nomComplet = ("Dr. " + prenom + " " + nom).trim();
+                        String specialite = medecin.getSpecialite() == null || medecin.getSpecialite().isBlank() ? "Généraliste" : medecin.getSpecialite();
+                        String experience = medecin.getExperience() == null || medecin.getExperience().isBlank() ? "N/A" : medecin.getExperience();
+                        String telephone = medecin.getTelephone() == null || medecin.getTelephone().isBlank() ? "Non renseigné" : medecin.getTelephone();
+                        String email = medecin.getEmail() == null || medecin.getEmail().isBlank() ? "Non renseigné" : medecin.getEmail();
+
+                        String statusClass;
+                        String statusLabel;
+                        switch (i % 3) {
+                            case 1:
+                                statusClass = "limited";
+                                statusLabel = "Places limitées";
+                                break;
+                            case 2:
+                                statusClass = "unavailable";
+                                statusLabel = "Indisponible";
+                                break;
+                            default:
+                                statusClass = "available";
+                                statusLabel = "Disponible";
+                        }
+                %>
+                <article class="doctor-card"
+                         data-specialty="<%= specialite %>"
+                         data-status="<%= statusClass %>"
+                         data-name="<%= nomComplet.toLowerCase() %>">
+                    <div class="doctor-top">
+                        <div class="doctor-avatar"><i class="fas fa-user-doctor"></i></div>
+                        <h3 class="doctor-name"><%= nomComplet %></h3>
+                        <div class="doctor-specialty"><%= specialite %></div>
+                        <div class="doctor-status <%= statusClass %>"><%= statusLabel %></div>
+                    </div>
+
+                    <div class="doctor-body">
+                        <ul class="doctor-meta">
+                            <li><i class="fas fa-briefcase-medical"></i> Expérience : <%= experience %></li>
+                            <li><i class="fas fa-phone"></i> <%= telephone %></li>
+                            <li><i class="fas fa-envelope"></i> <%= email %></li>
+                        </ul>
+
+                        <div class="doctor-footer">
+                            <a class="doctor-action" href="${pageContext.request.contextPath}/jsp/auth/login.jsp?role=patient">
+                                <i class="fas fa-calendar-plus"></i> Prendre rendez-vous
+                            </a>
+                        </div>
+                    </div>
+                </article>
+                <% }} %>`;
+
+            // Insérer les cartes des médecins dans le conteneur
+            grid.innerHTML = doctorsHtml;
+
+            // Récupérer les nouvelles cartes
+            cards = Array.from(grid.querySelectorAll('.doctor-card'));
+            doctorsListLoaded = true;
+        }
 
         function renderEmptyState(show) {
             let empty = grid.querySelector('.empty-state');
@@ -1093,6 +1132,9 @@
         }
 
         function filterDoctors() {
+            // Construire la liste des médecins au premier filtre
+            buildDoctorsList();
+
             const specialtyValue = specialty.value;
             const availabilityValue = availability.value;
             const searchValue = search.value.trim().toLowerCase();
