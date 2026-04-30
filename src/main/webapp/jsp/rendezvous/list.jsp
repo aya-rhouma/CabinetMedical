@@ -6,7 +6,6 @@
 <%
     User patient = (User) session.getAttribute("user");
     List<RendezVous> rdvPlanifies = (List<RendezVous>) request.getAttribute("rdvPlanifies");
-<<<<<<< Updated upstream
     List<RendezVous> rdvPasses = (List<RendezVous>) request.getAttribute("rdvPasses");
     String contextPath = request.getContextPath();
 
@@ -18,10 +17,6 @@
     String prenom = patient.getPrenom();
     String nom = patient.getNom();
     String initials = (prenom.substring(0, 1) + (nom.isBlank() ? "P" : nom.substring(0, 1))).toUpperCase();
-=======
-    List<RendezVous> rdvPasses    = (List<RendezVous>) request.getAttribute("rdvPasses");
-    String ctx = request.getContextPath();
->>>>>>> Stashed changes
 %>
 
 <!DOCTYPE html>
@@ -29,7 +24,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< Updated upstream
     <meta name="description" content="Mes rendez-vous médicaux - MediCare Plus">
     <title>Mes Rendez-vous - MediCare Plus</title>
 
@@ -131,7 +125,7 @@
             color: var(--primary);
         }
 
-        .btn-login {
+        .btn-logout {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white !important;
             padding: 0.5rem 1.5rem;
@@ -143,6 +137,8 @@
             font-size: 1.5rem;
             cursor: pointer;
             color: var(--dark);
+            background: none;
+            border: none;
         }
 
         /* ============================================
@@ -154,9 +150,45 @@
             padding: 0 2rem;
         }
 
-        /* ============================================
-           HERO PANEL
-           ============================================ */
+        /* Breadcrumb */
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumb i {
+            font-size: 0.7rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .page-header h1 i {
+            color: var(--primary);
+            margin-right: 0.75rem;
+        }
+
+        /* Hero Panel */
         .hero-panel {
             background: white;
             border-radius: 24px;
@@ -212,167 +244,194 @@
             box-shadow: var(--shadow);
         }
 
-        /* ============================================
-           SECTION CARD
-           ============================================ */
-        .section-card {
+        /* Card */
+        .card {
             background: white;
             border-radius: 24px;
-            padding: 2rem;
-            margin-bottom: 2rem;
             box-shadow: var(--shadow);
+            overflow: hidden;
             transition: var(--transition);
+            margin-bottom: 2rem;
         }
 
-        .section-card:hover {
+        .card:hover {
             box-shadow: var(--shadow-lg);
         }
 
-        .section-card h2 {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            color: var(--dark);
-            border-left: 4px solid var(--primary);
-            padding-left: 1rem;
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
-        .section-card h2 i {
-            color: var(--primary);
-            margin-right: 0.5rem;
-        }
-
-        .section-card h3 {
-            font-size: 1rem;
+        .card-header h2 {
+            font-size: 1.2rem;
             font-weight: 600;
-            margin-bottom: 1rem;
             color: var(--dark);
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--border);
         }
 
-        .section-card h3 i {
+        .card-header h2 i {
             color: var(--primary);
         }
 
-        /* ============================================
-           GRID
-           ============================================ */
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-        }
-
-        /* ============================================
-           TABLES
-           ============================================ */
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead th {
-            text-align: left;
-            padding: 0.75rem;
-            background: var(--light-gray);
+        .badge-count {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.7rem;
             font-weight: 600;
-            color: var(--dark);
-            border-bottom: 2px solid var(--border);
+            margin-left: 0.5rem;
         }
 
-        tbody td {
-            padding: 0.75rem;
-            border-bottom: 1px solid var(--border);
-            color: var(--gray);
+        .card-body {
+            padding: 1.5rem;
         }
 
-        tbody tr:hover {
-            background: var(--light-gray);
-        }
-
-        .muted {
-            text-align: center;
-            color: var(--gray);
-            padding: 2rem;
-        }
-
-        .muted i {
-            margin-right: 0.5rem;
-        }
-
-        /* ============================================
-           BOUTONS
-           ============================================ */
-        .btn {
-            padding: 0.5rem 1rem;
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 0.6rem 1.2rem;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-weight: 600;
-            font-size: 0.75rem;
+            font-size: 0.85rem;
             cursor: pointer;
             transition: var(--transition);
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            font-family: 'Inter', sans-serif;
+            text-decoration: none;
         }
 
-        .btn-danger {
-            background: linear-gradient(135deg, var(--danger), #dc2626);
-            color: white;
-        }
-
-        .btn-danger:hover {
+        .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow-lg);
         }
 
-        /* ============================================
-           ALERTES
-           ============================================ */
-        .alert {
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            border-radius: 12px;
+        .btn-action {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--gray);
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            text-decoration: none;
+        }
+
+        .btn-action:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        /* Table */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .certificats-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .certificats-table thead {
+            background: var(--light-gray);
+        }
+
+        .certificats-table th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .certificats-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+            color: var(--dark);
+        }
+
+        .certificats-table tr:hover {
+            background: var(--light-gray);
+        }
+
+        /* Patient Info */
+        .patient-info {
             display: flex;
             align-items: center;
             gap: 0.75rem;
         }
 
-        .alert-success {
-            background: #d1fae5;
-            color: var(--secondary);
-            border-left: 4px solid var(--secondary);
+        .patient-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
         }
 
-        .alert-danger {
-            background: #fee2e2;
-            color: var(--danger);
-            border-left: 4px solid var(--danger);
+        .patient-details {
+            display: flex;
+            flex-direction: column;
         }
 
-        .alert i {
-            font-size: 1.2rem;
+        .patient-details strong {
+            font-size: 0.85rem;
+            color: var(--dark);
         }
 
-        /* ============================================
-           RESPONSIVE
-           ============================================ */
-        @media (max-width: 1024px) {
-            .grid-2 {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
+        .patient-details small {
+            font-size: 0.7rem;
+            color: var(--gray);
         }
 
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state h3 {
+            font-size: 0.9rem;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .empty-state p {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
             .menu-toggle {
                 display: block;
@@ -409,22 +468,17 @@
                 font-size: 1.3rem;
             }
 
-            .section-card {
-                padding: 1.2rem;
+            .page-header h1 {
+                font-size: 1.4rem;
             }
 
-            table {
-                font-size: 0.85rem;
-            }
-
-            thead th, tbody td {
-                padding: 0.5rem;
+            .card-header {
+                flex-direction: column;
+                text-align: center;
             }
         }
 
-        /* ============================================
-           ANIMATIONS
-           ============================================ */
+        /* Animations */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -436,26 +490,20 @@
             }
         }
 
-        .hero-panel, .section-card {
+        .hero-panel, .card, .page-header {
             animation: fadeInUp 0.6s ease forwards;
             opacity: 0;
         }
 
-        .hero-panel { animation-delay: 0s; }
-        .section-card { animation-delay: 0.1s; }
+        .page-header { animation-delay: 0s; }
+        .hero-panel { animation-delay: 0.05s; }
+        .card:first-of-type { animation-delay: 0.1s; }
+        .card:last-of-type { animation-delay: 0.2s; }
     </style>
-=======
-    <title>Mes Rendez-vous - MediCare Plus</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" href="<%= ctx %>/css/medecin.css">
->>>>>>> Stashed changes
 </head>
 
 <body>
 
-<<<<<<< Updated upstream
 <!-- Navigation -->
 <nav class="navbar">
     <div class="nav-container">
@@ -463,24 +511,27 @@
             <i class="fas fa-heartbeat"></i>
             <span>MediCare Plus</span>
         </a>
-        <div class="nav-links">
+
+        <div class="nav-links" id="navLinks">
             <a href="<%= contextPath %>/patient">Dashboard</a>
             <a href="<%= contextPath %>/patient?action=reservationForm">Prendre RDV</a>
-            <a href="<%= contextPath %>/patient?action=certificats">Certificats</a>
-            <a href="<%= contextPath %>/auth/logout" class="btn-login">
+            <a href="<%= contextPath %>/patient?action=mesRdv" class="active">Mes RDV</a>
+            <a href="<%= contextPath %>/patient?action=demandeCertificat">Certificats</a>
+            <a href="<%= contextPath %>/auth/logout" class="btn-logout">
                 <i class="fas fa-sign-out-alt"></i> Déconnexion
             </a>
         </div>
-        <div class="menu-toggle">
+
+        <button class="menu-toggle" id="menuToggle">
             <i class="fas fa-bars"></i>
-        </div>
+        </button>
     </div>
 </nav>
 
 <!-- Main Content -->
 <main class="dashboard-main">
     <!-- Hero Panel -->
-    <div class="hero-panel" data-aos="fade-up">
+    <div class="hero-panel">
         <h1>Bonjour, <span class="gradient-text"><%= prenom %> <%= nom %></span></h1>
         <div class="role-badge">
             <i class="fas fa-user-circle"></i> Patient
@@ -488,163 +539,14 @@
         <div class="avatar"><%= initials %></div>
     </div>
 
-    <!-- Liste des rendez-vous -->
-    <div class="section-card" data-aos="fade-up">
-        <h2><i class="fas fa-calendar-check"></i> Mes Rendez-vous</h2>
-
-        <% if (request.getAttribute("success") != null) { %>
-        <div class="alert alert-success">
-            <i class="fas fa-check-circle"></i>
-            <span><%= request.getAttribute("success") %></span>
-        </div>
-        <% } %>
-
-        <% if (request.getAttribute("error") != null) { %>
-        <div class="alert alert-danger">
-            <i class="fas fa-exclamation-circle"></i>
-            <span><%= request.getAttribute("error") %></span>
-        </div>
-        <% } %>
-
-        <div class="grid-2">
-            <!-- RDV Planifiés -->
-            <div>
-                <h3><i class="fas fa-calendar-day"></i> Planifiés</h3>
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Heure</th>
-                            <th>Médecin</th>
-                            <th>Actions</th>
-                        </thead>
-                        </thead>
-                        <tbody>
-                        <% if (rdvPlanifies == null || rdvPlanifies.isEmpty()) { %>
-                        <tr>
-                            <td colspan="4" class="muted">
-                                <i class="fas fa-calendar-times"></i> Aucun RDV planifié
-                            </td>
-                            </thead>
-                                <% } else {
-                                for (RendezVous r : rdvPlanifies) { %>
-                        <tr>
-                            <td><%= r.getDateRdv() %></td>
-                            <td><%= r.getHeureDebut() %> - <%= r.getHeureFin() %></td>
-                            <td>
-                                <i class="fas fa-user-md"></i>
-                                Dr <%= r.getMedecin().getPrenom() %> <%= r.getMedecin().getNom() %>
-                            </td>
-                            <td>
-                                <form method="post" action="<%= contextPath %>/patient" style="display:inline;">
-                                    <input type="hidden" name="action" value="annulerRdv">
-                                    <input type="hidden" name="rdvId" value="<%= r.getId() %>">
-                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Annuler ce rendez-vous ?')">
-                                        <i class="fas fa-times"></i> Annuler
-                                    </button>
-                                </form>
-                            </td>
-                            </thead>
-                                <% }} %>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- RDV Passés -->
-            <div>
-                <h3><i class="fas fa-history"></i> Historique (Passés)</h3>
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Heure</th>
-                            <th>Médecin</th>
-                        </thead>
-                        </thead>
-                        <tbody>
-                        <% if (rdvPasses == null || rdvPasses.isEmpty()) { %>
-                        <tr>
-                            <td colspan="3" class="muted">
-                                <i class="fas fa-inbox"></i> Aucun historique
-                            </td>
-                            </thead>
-                                <% } else {
-                                for (RendezVous r : rdvPasses) { %>
-                        <tr>
-                            <td><%= r.getDateRdv() %></td>
-                            <td><%= r.getHeureDebut() %> - <%= r.getHeureFin() %></td>
-                            <td>
-                                <i class="fas fa-user-md"></i>
-                                Dr <%= r.getMedecin().getPrenom() %> <%= r.getMedecin().getNom() %>
-                            </td>
-                            </thead>
-                                <% }} %>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</main>
-
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script>
-    AOS.init({ duration: 900, once: true, offset: 80, easing: 'ease-in-out' });
-
-    const menuToggle = document.querySelector('.menu-toggle');
-    const navLinks = document.querySelector('.nav-links');
-    if (menuToggle) {
-        menuToggle.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-            const icon = menuToggle.querySelector('i');
-            if (icon.classList.contains('fa-bars')) {
-                icon.classList.remove('fa-bars');
-                icon.classList.add('fa-times');
-            } else {
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
-            }
-        });
-    }
-</script>
-</body>
-</html>
-=======
-<nav class="navbar">
-    <div class="nav-container">
-        <a class="logo" href="<%= ctx %>/"><i class="fas fa-heartbeat"></i><span>MediCare Plus</span></a>
-        <div class="nav-links">
-            <a href="<%= ctx %>/patient">Dashboard</a>
-            <a href="<%= ctx %>/patient?action=reservationForm">Prendre RDV</a>
-            <a href="<%= ctx %>/patient?action=mesRdv" class="active">Mes RDV</a>
-            <a href="<%= ctx %>/patient?action=demandeCertificat">Certificats</a>
-            <a href="<%= ctx %>/auth/logout" class="btn-login"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
-        </div>
-        <div class="menu-toggle"><i class="fas fa-bars"></i></div>
-    </div>
-</nav>
-
-<main class="dashboard-main">
-    <div class="page-header" data-aos="fade-up">
-        <div class="breadcrumb">
-            <a href="<%= ctx %>/patient">Dashboard</a>
-            <i class="fas fa-chevron-right"></i>
-            <span>Mes Rendez-vous</span>
-        </div>
-        <h1><i class="fas fa-calendar-check"></i> Mes Rendez-vous</h1>
-    </div>
-
     <!-- RDV Planifiés -->
-    <div class="card" data-aos="fade-up" data-aos-delay="100">
+    <div class="card">
         <div class="card-header">
             <h2>
                 <i class="fas fa-calendar-check"></i> RDV à venir
                 <span class="badge-count"><%= rdvPlanifies != null ? rdvPlanifies.size() : 0 %></span>
             </h2>
-            <a href="<%= ctx %>/patient?action=reservationForm" class="btn-primary">
+            <a href="<%= contextPath %>/patient?action=reservationForm" class="btn-primary">
                 <i class="fas fa-plus"></i> Nouveau RDV
             </a>
         </div>
@@ -659,13 +561,13 @@
             <div class="table-responsive">
                 <table class="certificats-table">
                     <thead>
-                        <tr><th>Date</th><th>Horaire</th><th>Médecin</th><th>Statut</th><th>Actions</th></tr>
+                    <tr><th>Date</th><th>Horaire</th><th>Médecin</th><th>Statut</th><th>Actions</th></tr>
                     </thead>
                     <tbody>
                     <% for (RendezVous r : rdvPlanifies) { %>
                     <tr>
                         <td><strong><%= r.getDateRdv() %></strong></td>
-                        <td style="color:#64748b;">
+                        <td style="color:var(--gray);">
                             <i class="fas fa-clock" style="color:var(--primary);"></i>
                             <%= r.getHeureDebut() %> – <%= r.getHeureFin() %>
                         </td>
@@ -684,7 +586,7 @@
                             </span>
                         </td>
                         <td>
-                            <form method="post" action="<%= ctx %>/patient" style="margin:0;"
+                            <form method="post" action="<%= contextPath %>/patient" style="margin:0;"
                                   onsubmit="return confirm('Annuler ce rendez-vous ?')">
                                 <input type="hidden" name="action" value="annulerRdv">
                                 <input type="hidden" name="rdvId" value="<%= r.getId() %>">
@@ -703,7 +605,7 @@
     </div>
 
     <!-- Historique -->
-    <div class="card" data-aos="fade-up" data-aos-delay="200">
+    <div class="card">
         <div class="card-header">
             <h2>
                 <i class="fas fa-history"></i> Historique
@@ -720,13 +622,13 @@
             <div class="table-responsive">
                 <table class="certificats-table">
                     <thead>
-                        <tr><th>Date</th><th>Horaire</th><th>Médecin</th><th>Statut</th></tr>
+                    <tr><th>Date</th><th>Horaire</th><th>Médecin</th><th>Statut</th></tr>
                     </thead>
                     <tbody>
                     <% for (RendezVous r : rdvPasses) { %>
                     <tr>
                         <td><strong><%= r.getDateRdv() %></strong></td>
-                        <td style="color:#64748b;">
+                        <td style="color:var(--gray);">
                             <i class="fas fa-clock" style="color:var(--primary);"></i>
                             <%= r.getHeureDebut() %> – <%= r.getHeureFin() %>
                         </td>
@@ -756,11 +658,35 @@
 
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
-    AOS.init({ duration: 800, once: true });
-    document.querySelector('.menu-toggle')?.addEventListener('click', () => {
-        document.querySelector('.nav-links').classList.toggle('active');
+    AOS.init({ duration: 900, once: true, offset: 80, easing: 'ease-in-out' });
+
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            const icon = menuToggle.querySelector('i');
+            if (icon.classList.contains('fa-bars')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+    }
+
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', () => {
+            navLinks.classList.remove('active');
+            const icon = menuToggle?.querySelector('i');
+            if (icon) {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
     });
 </script>
 </body>
 </html>
->>>>>>> Stashed changes

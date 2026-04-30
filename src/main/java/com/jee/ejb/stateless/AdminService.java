@@ -58,6 +58,7 @@ public class AdminService implements AdminServiceLocal {
         m.setSpecialite(specialite);
         m.setLicenceNumber(licenceNumber);
         m.setExperience(experience);
+        m.setCIN(generateUniqueCIN());
         em.persist(m);
         return m;
     }
@@ -73,7 +74,13 @@ public class AdminService implements AdminServiceLocal {
 
     @Override
     public List<Secretaire> getAllSecretaires() {
-        return em.createQuery("SELECT s FROM Secretaire s ORDER BY s.nom, s.prenom", Secretaire.class).getResultList();
+        return em.createQuery(
+                        "SELECT s FROM Secretaire s " +
+                                "LEFT JOIN FETCH s.medecin " +
+                                "ORDER BY s.nom, s.prenom",
+                        Secretaire.class
+                )
+                .getResultList();
     }
 
     @Override
@@ -88,6 +95,7 @@ public class AdminService implements AdminServiceLocal {
         s.setEmail(email.toLowerCase());
         s.setTelephone(telephone);
         s.setMotDePasse(password);
+        s.setCIN(generateUniqueCIN());
         if (medecinId != null) {
             Medecin medecin = em.find(Medecin.class, medecinId);
             s.setMedecin(medecin);
@@ -148,5 +156,21 @@ public class AdminService implements AdminServiceLocal {
                 .setParameter("email", email.toLowerCase())
                 .getSingleResult();
         return count > 0;
+    }
+
+    private int generateUniqueCIN() {
+        int cin;
+        boolean exists;
+        do {
+            cin = 10000000 + (int) (Math.random() * 90000000);
+            Long count = em.createQuery(
+                            "SELECT COUNT(u) FROM User u WHERE u.cin = :cin",
+                            Long.class
+                    )
+                    .setParameter("cin", cin)
+                    .getSingleResult();
+            exists = count != null && count > 0;
+        } while (exists);
+        return cin;
     }
 }

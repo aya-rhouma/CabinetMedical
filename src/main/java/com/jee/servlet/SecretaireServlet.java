@@ -60,12 +60,17 @@ public class SecretaireServlet extends HttpServlet {
 
     private void forwardDashboard(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        HttpSession session = req.getSession(false);
+        User currentUser = session == null ? null : (User) session.getAttribute("user");
+        Secretaire secretaire = currentUser == null ? null : secretaireService.getSecretaireById(currentUser.getId());
+
         req.setAttribute("nbPatients",    secretaireService.countPatients());
         req.setAttribute("nbMedecins",    secretaireService.countMedecins());
         req.setAttribute("nbRdv",         secretaireService.countRendezVous());
         req.setAttribute("nbRdvDuJour",   secretaireService.countRendezVousDuJour());
         req.setAttribute("rdvDuJour",     secretaireService.getRendezVousDuJour());
         req.setAttribute("alertes",       secretaireService.getMaterielsEnAlerte());
+        req.setAttribute("medecinAssocie", secretaire != null ? secretaire.getMedecin() : null);
         req.setAttribute("lastLogin",     LocalDateTime.now());
         req.getRequestDispatcher("/jsp/secretaire/dashboard.jsp").forward(req, resp);
     }
