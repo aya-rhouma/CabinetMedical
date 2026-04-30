@@ -45,6 +45,17 @@ public class SecretaireService implements SecretaireServiceLocal {
         ).getSingleResult();
     }
 
+    @Override
+    public Secretaire getSecretaireById(int secretaireId) {
+        List<Secretaire> result = em.createQuery(
+                "SELECT s FROM Secretaire s LEFT JOIN FETCH s.medecin WHERE s.id = :id",
+                Secretaire.class
+        ).setParameter("id", secretaireId)
+         .setMaxResults(1)
+         .getResultList();
+        return result.isEmpty() ? null : result.get(0);
+    }
+
     /* ===================== PATIENTS ===================== */
 
     @Override

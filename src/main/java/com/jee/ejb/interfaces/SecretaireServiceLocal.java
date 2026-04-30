@@ -15,6 +15,7 @@ public interface SecretaireServiceLocal {
     long countMedecins();
     long countRendezVous();
     long countRendezVousDuJour();
+    Secretaire getSecretaireById(int secretaireId);
 
     /* === PATIENTS === */
     List<Patient> getAllPatients();

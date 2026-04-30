@@ -134,17 +134,20 @@
             color: var(--primary);
         }
 
+        /* Style du bouton Connexion - MÊME STYLE QUE LES AUTRES BOUTONS */
         .btn-login {
             display: inline-flex;
             align-items: center;
             gap: 8px;
             padding: 10px 24px;
             border-radius: 40px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: #fff;
             font-size: 14px;
             font-weight: 600;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
         }
 
         .btn-login:hover {
@@ -295,7 +298,7 @@
         }
 
         .btn-filter {
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: #fff;
         }
 
@@ -338,7 +341,7 @@
         .doctor-top {
             padding: 24px 20px 20px;
             text-align: center;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: #fff;
         }
 
@@ -434,7 +437,7 @@
             gap: 8px;
             padding: 12px;
             border-radius: 40px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: #fff;
             font-size: 14px;
             font-weight: 600;
@@ -487,7 +490,7 @@
         }
 
         .service-badge.available {
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: #fff;
         }
 
@@ -542,7 +545,7 @@
             gap: 8px;
             padding: 14px 20px;
             border-radius: 40px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: #fff;
             font-size: 14px;
             font-weight: 600;
@@ -695,7 +698,7 @@
             width: 46px;
             border: none;
             border-radius: 12px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: #fff;
             cursor: pointer;
         }
@@ -764,7 +767,7 @@
             <a class="nav-item" href="#apropos">À propos</a>
             <a class="nav-item" href="#contact">Contact</a>
             <a href="${pageContext.request.contextPath}/jsp/auth/login.jsp" class="btn-login">
-                <i class="fas fa-right-to-bracket"></i>Connexion
+                <i class="fas fa-right-to-bracket"></i> Connexion
             </a>
         </div>
     </div>
@@ -896,7 +899,6 @@
     </div>
 </section>
 
-
 <section class="section" id="services">
     <div class="container">
         <h2 class="section-title" data-aos="fade-up">Nos Espaces</h2>
@@ -970,7 +972,6 @@
         </div>
     </div>
 </section>
-
 
 <section class="section" id="apropos">
     <div class="container">

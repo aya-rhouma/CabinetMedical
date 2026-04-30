@@ -17,28 +17,27 @@
     }
 
     String prenom = patient.getPrenom();
-    String nom    = patient.getNom();
-    String initials = (prenom.substring(0,1) + (nom.isBlank() ? "P" : nom.substring(0,1))).toUpperCase();
-    int nbPlanifies = rdvPlanifies  == null ? 0 : rdvPlanifies.size();
-    int nbPasses    = rdvPasses     == null ? 0 : rdvPasses.size();
-    int nbDemandes  = demandesCertificats == null ? 0 : demandesCertificats.size();
+    String nom = patient.getNom();
+    String initials = (prenom.substring(0, 1) + (nom.isBlank() ? "P" : nom.substring(0, 1))).toUpperCase();
+
+    int nbPlanifies = rdvPlanifies == null ? 0 : rdvPlanifies.size();
+    int nbPasses = rdvPasses == null ? 0 : rdvPasses.size();
+    int nbDemandes = demandesCertificats == null ? 0 : demandesCertificats.size();
+    int nbNotifications = notifications == null ? 0 : notifications.size();
 %>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Patient - MediCare Plus</title>
-<<<<<<< Updated upstream
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
     <style>
-        /* ============================================
-           VARIABLES CSS
-           ============================================ */
         :root {
             --primary: #0ea5e9;
             --primary-dark: #0284c7;
@@ -68,9 +67,7 @@
             color: var(--dark);
         }
 
-        /* ============================================
-           NAVIGATION
-           ============================================ */
+        /* Navigation */
         .navbar {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -125,11 +122,20 @@
             color: var(--primary);
         }
 
-        .btn-login {
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .btn-logout {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white !important;
             padding: 0.5rem 1.5rem;
             border-radius: 50px;
+        }
+
+        .btn-logout:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
 
         .menu-toggle {
@@ -137,20 +143,18 @@
             font-size: 1.5rem;
             cursor: pointer;
             color: var(--dark);
+            background: none;
+            border: none;
         }
 
-        /* ============================================
-           DASHBOARD MAIN
-           ============================================ */
+        /* Dashboard Main */
         .dashboard-main {
             max-width: 1400px;
             margin: 2rem auto;
             padding: 0 2rem;
         }
 
-        /* ============================================
-           HERO PANEL
-           ============================================ */
+        /* Hero Panel */
         .hero-panel {
             background: white;
             border-radius: 24px;
@@ -167,7 +171,7 @@
         }
 
         .hero-panel h1 {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 700;
             color: var(--dark);
             margin-bottom: 0.5rem;
@@ -210,26 +214,14 @@
             box-shadow: var(--shadow);
         }
 
-        /* ============================================
-           GRID SYSTEMS
-           ============================================ */
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .grid-4 {
+        /* Stats Grid */
+        .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
-        /* ============================================
-           STAT CARDS
-           ============================================ */
         .stat-card {
             background: white;
             border-radius: 20px;
@@ -283,9 +275,14 @@
             color: transparent;
         }
 
-        /* ============================================
-           ACTION CARDS
-           ============================================ */
+        /* Actions Grid */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
         .action-card {
             background: white;
             border-radius: 20px;
@@ -301,6 +298,7 @@
             color: var(--dark);
             position: relative;
             overflow: hidden;
+            cursor: pointer;
         }
 
         .action-card::before {
@@ -349,134 +347,104 @@
             color: white;
         }
 
-        /* ============================================
-           CARD
-           ============================================ */
-        .card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            margin-bottom: 1.5rem;
-            transition: var(--transition);
+        /* Notification Widget */
+        .notification-widget {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
         }
 
-        .card:hover {
-            box-shadow: var(--shadow-lg);
-        }
-
-        .card-header {
-            padding: 1rem 1.5rem;
-            background: linear-gradient(135deg, #f8fafc, #ffffff);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .card-header h2 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--dark);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .card-header h2 i {
-            color: var(--primary);
-        }
-
-        .card-body {
-            padding: 1.5rem;
-        }
-
-        /* ============================================
-           ALERT
-           ============================================ */
-        .alert {
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .alert-danger {
-            background: #fee2e2;
-            color: var(--danger);
-            border-left: 4px solid var(--danger);
-        }
-
-        .alert i {
-            font-size: 1.2rem;
-        }
-
-        /* ============================================
-           NOTIFICATIONS
-           ============================================ */
-        .empty-state {
-            text-align: center;
-            padding: 2rem;
-        }
-
-        .empty-icon {
+        .notification-btn {
             width: 60px;
             height: 60px;
-            background: var(--light-gray);
             border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .notification-btn:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            font-size: 0.7rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1rem;
+            font-weight: 600;
         }
 
-        .empty-icon i {
-            font-size: 1.5rem;
-            color: var(--gray);
+        .notification-panel {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            width: 300px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+            display: none;
         }
 
-        .empty-state h3 {
-            font-size: 1rem;
+        .notification-panel.show {
+            display: block;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .notification-header {
+            padding: 0.75rem 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-weight: 600;
+        }
+
+        .notification-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .notification-list li {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
             color: var(--dark);
-            margin-bottom: 0.5rem;
+            list-style: none;
         }
 
-        .empty-state p {
+        .notification-list li:last-child {
+            border-bottom: none;
+        }
+
+        .notification-list li:hover {
+            background: var(--light-gray);
+        }
+
+        .notification-empty {
+            padding: 1.5rem;
+            text-align: center;
             color: var(--gray);
             font-size: 0.85rem;
         }
 
-        .notification-list {
-            list-style: none;
-        }
-
-        .notification-list li {
-            padding: 0.75rem;
-            background: var(--light-gray);
-            margin-bottom: 0.5rem;
-            border-radius: 10px;
-            border-left: 3px solid var(--primary);
-            transition: var(--transition);
-        }
-
-        .notification-list li:hover {
-            background: #e2e8f0;
-            transform: translateX(5px);
-        }
-
-        .notification-list li i {
-            margin-right: 0.5rem;
-            color: var(--primary);
-        }
-
-        .d-none {
-            display: none;
-        }
-
-        /* ============================================
-           RESPONSIVE
-           ============================================ */
+        /* Responsive */
         @media (max-width: 1024px) {
-            .grid-3, .grid-4 {
+            .stats-grid, .actions-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
@@ -485,7 +453,6 @@
             .menu-toggle {
                 display: block;
             }
-
             .nav-links {
                 display: none;
                 position: absolute;
@@ -498,56 +465,34 @@
                 gap: 1rem;
                 box-shadow: var(--shadow);
             }
-
             .nav-links.active {
                 display: flex;
             }
-
             .dashboard-main {
                 padding: 1rem;
             }
-
             .hero-panel h1 {
                 font-size: 1.3rem;
             }
-
             .avatar {
                 width: 60px;
                 height: 60px;
                 font-size: 1.5rem;
             }
-
-            .grid-3, .grid-4 {
+            .stats-grid, .actions-grid {
                 grid-template-columns: 1fr;
                 gap: 1rem;
             }
-
             .stat-card .value {
                 font-size: 2rem;
             }
-        }
-
-        @media (max-width: 480px) {
-            .hero-panel {
-                padding: 1rem;
-            }
-
-            .stat-card {
-                padding: 1rem;
-            }
-
-            .action-card {
-                padding: 1rem;
-            }
-
-            .action-card i {
-                font-size: 1.5rem;
+            .notification-widget {
+                bottom: 1rem;
+                right: 1rem;
             }
         }
 
-        /* ============================================
-           ANIMATIONS
-           ============================================ */
+        /* Animations */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -559,7 +504,7 @@
             }
         }
 
-        .stat-card, .action-card, .hero-panel, .card {
+        .stat-card, .action-card, .hero-panel {
             animation: fadeInUp 0.6s ease forwards;
             opacity: 0;
         }
@@ -567,193 +512,129 @@
         .stat-card:nth-child(1) { animation-delay: 0.1s; }
         .stat-card:nth-child(2) { animation-delay: 0.2s; }
         .stat-card:nth-child(3) { animation-delay: 0.3s; }
-        .action-card:nth-child(1) { animation-delay: 0.4s; }
-        .action-card:nth-child(2) { animation-delay: 0.5s; }
-        .action-card:nth-child(3) { animation-delay: 0.6s; }
-        .action-card:nth-child(4) { animation-delay: 0.7s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+        .action-card:nth-child(1) { animation-delay: 0.5s; }
+        .action-card:nth-child(2) { animation-delay: 0.6s; }
+        .action-card:nth-child(3) { animation-delay: 0.7s; }
+        .action-card:nth-child(4) { animation-delay: 0.8s; }
         .hero-panel { animation-delay: 0s; }
     </style>
 </head>
+
 <body>
 
-<!-- Navigation -->
 <nav class="navbar">
     <div class="nav-container">
-        <a class="logo" href="<%= contextPath %>/">
+        <a class="logo" href="<%= ctx %>/">
             <i class="fas fa-heartbeat"></i>
             <span>MediCare Plus</span>
         </a>
-        <div class="nav-links">
-            <a href="<%= contextPath %>/">Accueil</a>
-            <a href="#" class="active">Dashboard</a>
-            <a href="<%= contextPath %>/patient?action=reservationForm">Prendre RDV</a>
-            <a href="<%= contextPath %>/patient?action=mesRdv">Mes RDV</a>
-            <a href="<%= contextPath %>/patient?action=demandeCertificat">Certificats</a>
-            <a href="<%= contextPath %>/auth/logout" class="btn-login">
-                <i class="fas fa-sign-out-alt"></i> Déconnexion
-            </a>
-        </div>
-        <div class="menu-toggle">
-            <i class="fas fa-bars"></i>
-=======
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" href="<%= ctx %>/css/medecin.css">
-</head>
-<body>
 
-<nav class="navbar">
-    <div class="nav-container">
-        <a class="logo" href="<%= ctx %>/"><i class="fas fa-heartbeat"></i><span>MediCare Plus</span></a>
-        <div class="nav-links">
+        <div class="nav-links" id="navLinks">
             <a href="<%= ctx %>/patient" class="active">Dashboard</a>
             <a href="<%= ctx %>/patient?action=reservationForm">Prendre RDV</a>
             <a href="<%= ctx %>/patient?action=mesRdv">Mes RDV</a>
             <a href="<%= ctx %>/patient?action=demandeCertificat">Certificats</a>
-            <a href="<%= ctx %>/auth/logout" class="btn-login"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
->>>>>>> Stashed changes
+            <a href="<%= ctx %>/auth/logout" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i> Déconnexion
+            </a>
         </div>
-        <div class="menu-toggle"><i class="fas fa-bars"></i></div>
+
+        <button class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
     </div>
 </nav>
 
 <main class="dashboard-main">
-<<<<<<< Updated upstream
     <!-- Hero Panel -->
-    <div class="hero-panel" data-aos="fade-up">
-        <h1>Bonjour, <span class="gradient-text"><%= prenom %> <%= nom %></span></h1>
-        <span class="role-badge">
+    <div class="hero-panel">
+        <h1>
+            Bonjour,
+            <span class="gradient-text"><%= prenom %> <%= nom %></span>
+        </h1>
+        <div class="role-badge">
             <i class="fas fa-user-circle"></i> Patient
-        </span>
-=======
-
-    <% if (request.getAttribute("error") != null) { %>
-    <div style="background:#fee2e2;border-left:4px solid #ef4444;padding:1rem 1.5rem;border-radius:12px;margin-bottom:1.5rem;color:#991b1b;">
-        <i class="fas fa-exclamation-circle"></i> <%= request.getAttribute("error") %>
-    </div>
-    <% } %>
-
-    <section class="hero-panel" data-aos="fade-up">
-        <h1>Bonjour, <span class="gradient-text"><%= prenom %> <%= nom %></span></h1>
-        <span class="role-badge"><i class="fas fa-user-circle"></i> Patient</span>
->>>>>>> Stashed changes
+        </div>
         <div class="avatar"><%= initials %></div>
     </div>
 
-    <div class="grid-3" data-aos="fade-up" data-aos-delay="100">
+    <!-- Statistics -->
+    <div class="stats-grid">
         <div class="stat-card">
-            <i class="fa-solid fa-calendar-check"></i>
+            <i class="fas fa-calendar-check"></i>
             <h3>RDV planifiés</h3>
             <div class="value"><%= nbPlanifies %></div>
         </div>
         <div class="stat-card">
-            <i class="fa-solid fa-clock-rotate-left"></i>
+            <i class="fas fa-calendar-week"></i>
             <h3>RDV passés</h3>
             <div class="value"><%= nbPasses %></div>
         </div>
         <div class="stat-card">
-            <i class="fa-solid fa-file-medical"></i>
+            <i class="fas fa-file-medical"></i>
             <h3>Certificats</h3>
             <div class="value"><%= nbDemandes %></div>
         </div>
+        <div class="stat-card">
+            <i class="fas fa-bell"></i>
+            <h3>Notifications</h3>
+            <div class="value"><%= nbNotifications %></div>
+        </div>
     </div>
 
-<<<<<<< Updated upstream
-    <!-- Actions Rapides -->
-    <div class="grid-4">
-        <a class="action-card" href="<%= contextPath %>/patient?action=reservationForm" data-aos="fade-up" data-aos-delay="400">
-            <i class="fa-solid fa-calendar-plus"></i>
-            <span class="title">Réserver RDV</span>
-        </a>
-        <a class="action-card" href="<%= contextPath %>/patient?action=mesRdv" data-aos="fade-up" data-aos-delay="500">
-=======
-    <div class="grid-4" data-aos="fade-up" data-aos-delay="200">
+    <!-- Actions -->
+    <div class="actions-grid">
         <a class="action-card" href="<%= ctx %>/patient?action=reservationForm">
-            <i class="fa-solid fa-calendar-plus"></i>
-            <span class="title">Réserver RDV</span>
+            <i class="fas fa-calendar-plus"></i>
+            <span class="title">Prendre RDV</span>
         </a>
         <a class="action-card" href="<%= ctx %>/patient?action=mesRdv">
->>>>>>> Stashed changes
-            <i class="fa-solid fa-list-check"></i>
+            <i class="fas fa-calendar-alt"></i>
             <span class="title">Mes RDV</span>
         </a>
-        <a class="action-card" href="#notifications">
-            <i class="fa-solid fa-bell"></i>
-            <span class="title">Notifications</span>
-        </a>
-<<<<<<< Updated upstream
-        <a class="action-card" href="<%= contextPath %>/patient?action=demandeCertificat" data-aos="fade-up" data-aos-delay="700">
-=======
         <a class="action-card" href="<%= ctx %>/patient?action=demandeCertificat">
->>>>>>> Stashed changes
-            <i class="fa-solid fa-file-circle-plus"></i>
-            <span class="title">Certificats</span>
+            <i class="fas fa-file-medical"></i>
+            <span class="title">Demander un certificat</span>
+        </a>
+        <a class="action-card" href="<%= ctx %>/patient?action=mesDossiers">
+            <i class="fas fa-folder-open"></i>
+            <span class="title">Dossier médical</span>
         </a>
     </div>
-
-<<<<<<< Updated upstream
-    <!-- Alert Error -->
-    <% if (request.getAttribute("error") != null) { %>
-    <div class="alert alert-danger" data-aos="fade-up">
-        <i class="fas fa-exclamation-circle"></i>
-        <span><%= request.getAttribute("error") %></span>
-    </div>
-    <% } %>
-
-    <!-- Section Notifications -->
-    <div class="card" id="notifications" data-aos="fade-up">
-=======
-    <!-- Notifications -->
-    <div class="card" id="notifications" data-aos="fade-up" data-aos-delay="300">
->>>>>>> Stashed changes
-        <div class="card-header">
-            <h2><i class="fas fa-bell"></i> Notifications</h2>
-        </div>
-        <div class="card-body">
-<<<<<<< Updated upstream
-            <div id="notification-empty" class="empty-state <%= (notifications != null && !notifications.isEmpty()) ? "d-none" : "" %>">
-                <div class="empty-icon"><i class="fas fa-inbox"></i></div>
-                <h3>Aucune notification</h3>
-                <p>Vous n'avez aucune nouvelle notification.</p>
-            </div>
-            <ul id="notification-list" class="notification-list <%= (notifications == null || notifications.isEmpty()) ? "d-none" : "" %>">
-                <% if (notifications != null) {
-                    for (String n : notifications) { %>
-                <li>
-                    <i class="fas fa-circle"></i> <%= n %>
-                </li>
-                <% }} %>
-            </ul>
-        </div>
-    </div>
-=======
-            <div id="notification-empty" style="<%= (notifications == null || notifications.isEmpty()) ? "" : "display:none;" %>">
-                <div class="empty-state" style="padding:1.5rem;">
-                    <div class="empty-icon"><i class="fas fa-inbox"></i></div>
-                    <h3>Aucune nouvelle notification</h3>
-                </div>
-            </div>
-            <ul id="notification-list" style="list-style:none;<%= (notifications == null || notifications.isEmpty()) ? "display:none;" : "" %>">
-                <% if (notifications != null) { for (String n : notifications) { %>
-                <li style="padding:.75rem;background:#f0f9ff;margin-bottom:.5rem;border-radius:10px;border-left:3px solid var(--primary);">
-                    <i class="fas fa-circle" style="font-size:.6rem;color:var(--primary);margin-right:.5rem;"></i> <%= n %>
-                </li>
-                <% } } %>
-            </ul>
-        </div>
-    </div>
-
->>>>>>> Stashed changes
 </main>
+
+<!-- Notification Widget -->
+<div class="notification-widget">
+    <button class="notification-btn" onclick="toggleNotifications()">
+        <i class="fas fa-bell"></i>
+        <% if (nbNotifications > 0) { %>
+        <span class="notification-badge"><%= nbNotifications > 9 ? "9+" : nbNotifications %></span>
+        <% } %>
+    </button>
+    <div class="notification-panel" id="notificationPanel">
+        <div class="notification-header">
+            <i class="fas fa-bell"></i> Notifications
+        </div>
+        <ul class="notification-list">
+            <% if (notifications != null && !notifications.isEmpty()) {
+                for (String n : notifications) { %>
+            <li><%= n %></li>
+            <% }
+            } else { %>
+            <li class="notification-empty">Aucune notification</li>
+            <% } %>
+        </ul>
+    </div>
+</div>
 
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
-<<<<<<< Updated upstream
     AOS.init({ duration: 900, once: true, offset: 80, easing: 'ease-in-out' });
 
-    const menuToggle = document.querySelector('.menu-toggle');
-    const navLinks = document.querySelector('.nav-links');
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+
     if (menuToggle) {
         menuToggle.addEventListener('click', () => {
             navLinks.classList.toggle('active');
@@ -767,59 +648,32 @@
             }
         });
     }
-=======
-    AOS.init({ duration: 800, once: true });
-    document.querySelector('.menu-toggle')?.addEventListener('click', () => {
-        document.querySelector('.nav-links').classList.toggle('active');
+
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', () => {
+            navLinks.classList.remove('active');
+            const icon = menuToggle?.querySelector('i');
+            if (icon) {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
     });
->>>>>>> Stashed changes
 
-    // Notification polling
-    (function() {
-        const ctx = '<%= ctx %>';
-        const list = document.getElementById('notification-list');
-        const empty = document.getElementById('notification-empty');
+    function toggleNotifications() {
+        const panel = document.getElementById('notificationPanel');
+        panel.classList.toggle('show');
+    }
 
-<<<<<<< Updated upstream
-        function appendNotifications(items) {
-            if (!items || !items.length) return;
-            items.forEach((message) => {
-                const li = document.createElement('li');
-                li.innerHTML = '<i class="fas fa-circle"></i> ' + message;
-                list.prepend(li);
-            });
-            list.classList.remove('d-none');
-            if (empty) empty.classList.add('d-none');
+    // Fermer le panneau en cliquant ailleurs
+    document.addEventListener('click', function(event) {
+        const widget = document.querySelector('.notification-widget');
+        const panel = document.getElementById('notificationPanel');
+        if (widget && !widget.contains(event.target) && panel.classList.contains('show')) {
+            panel.classList.remove('show');
         }
-
-        async function pollNotifications() {
-            try {
-                const response = await fetch(ctx + '/patient?action=notifications', { cache: 'no-store' });
-                if (!response.ok) return;
-                const data = await response.json();
-                appendNotifications(data.notifications || []);
-            } catch (e) {}
-=======
-        async function pollNotifications() {
-            try {
-                const res = await fetch(ctx + '/patient?action=notifications', { cache: 'no-store' });
-                if (!res.ok) return;
-                const data = await res.json();
-                if (data.notifications && data.notifications.length > 0) {
-                    data.notifications.forEach(msg => {
-                        const li = document.createElement('li');
-                        li.style.cssText = 'padding:.75rem;background:#f0f9ff;margin-bottom:.5rem;border-radius:10px;border-left:3px solid var(--primary);';
-                        li.innerHTML = '<i class="fas fa-circle" style="font-size:.6rem;color:var(--primary);margin-right:.5rem;"></i> ' + msg;
-                        list.prepend(li);
-                    });
-                    list.style.display = '';
-                    empty.style.display = 'none';
-                }
-            } catch(e) {}
->>>>>>> Stashed changes
-        }
-        setInterval(pollNotifications, 8000);
-    })();
+    });
 </script>
+
 </body>
 </html>
