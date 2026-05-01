@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @WebServlet("/auth/*")
 @MultipartConfig(
@@ -27,6 +29,8 @@ import java.util.Locale;
         maxRequestSize = 1024 * 1024 * 10 // 10 MB
 )
 public class AuthServlet extends HttpServlet {
+
+    private static final Logger LOGGER = Logger.getLogger(AuthServlet.class.getName());
 
     @EJB
     private AuthServiceLocal authService;
@@ -76,40 +80,64 @@ public class AuthServlet extends HttpServlet {
         String roleParam = value(req.getParameter("role")).toLowerCase(Locale.ROOT);
         String role = roleParam.isBlank() ? "patient" : roleParam;
 
-        if (email.isBlank() || password.isBlank()) {
-            resp.sendRedirect(req.getContextPath() + "/jsp/auth/login.jsp?role=" + role + "&error=required_fields");
-            return;
-        }
+        try {
+            if (email.isBlank() || password.isBlank()) {
+                resp.sendRedirect(req.getContextPath() + "/jsp/auth/login.jsp?role=" + role + "&error=required_fields");
+                return;
+            }
 
-        User.Role userRole = switch (role) {
-            case "patient"    -> User.Role.PATIENT;
-            case "medecin"    -> User.Role.MEDECIN;
-            case "secretaire" -> User.Role.SECRETAIRE;
-            case "admin"      -> User.Role.ADMIN;
-            default           -> null;
-        };
+            User.Role userRole = switch (role) {
+                case "patient" -> User.Role.PATIENT;
+                case "medecin" -> User.Role.MEDECIN;
+                case "secretaire" -> User.Role.SECRETAIRE;
+                case "admin" -> User.Role.ADMIN;
+                default -> null;
+            };
 
-        if (userRole == null) {
-            resp.sendRedirect(req.getContextPath() + "/jsp/auth/login.jsp?error=invalid_credentials");
-            return;
-        }
+            if (userRole == null) {
+                resp.sendRedirect(req.getContextPath() + "/jsp/auth/login.jsp?error=invalid_credentials");
+                return;
+            }
 
-        User user = authService.authenticate(email, userRole, password);
-        if (user == null) {
+            User user = authService.authenticate(email, userRole, password);
+            if (user == null) {
+                resp.sendRedirect(req.getContextPath() + "/jsp/auth/login.jsp?role=" + role + "&error=invalid_credentials");
+                return;
+            }
+
+            HttpSession session = req.getSession(true);
+            session.setAttribute("user", toSessionUser(user));
+
+            User.Role effectiveRole = user.getRole();
+            if (effectiveRole == null) {
+                resp.sendRedirect(req.getContextPath() + "/jsp/auth/login.jsp?role=" + role + "&error=invalid_credentials");
+                return;
+            }
+
+            switch (effectiveRole) {
+                case PATIENT -> resp.sendRedirect(req.getContextPath() + "/patient");
+                case MEDECIN -> resp.sendRedirect(req.getContextPath() + "/medecin");
+                case SECRETAIRE -> resp.sendRedirect(req.getContextPath() + "/secretaire");
+                case ADMIN -> resp.sendRedirect(req.getContextPath() + "/admin");
+                default -> resp.sendRedirect(req.getContextPath() + "/");
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Erreur pendant l'authentification de " + email, e);
             resp.sendRedirect(req.getContextPath() + "/jsp/auth/login.jsp?role=" + role + "&error=invalid_credentials");
-            return;
         }
+    }
 
-        HttpSession session = req.getSession(true);
-        session.setAttribute("user", user);
-
-        switch (user.getRole()) {
-            case PATIENT    -> resp.sendRedirect(req.getContextPath() + "/patient");
-            case MEDECIN    -> resp.sendRedirect(req.getContextPath() + "/medecin");
-            case SECRETAIRE -> resp.sendRedirect(req.getContextPath() + "/secretaire");
-            case ADMIN      -> resp.sendRedirect(req.getContextPath() + "/admin");
-            default         -> resp.sendRedirect(req.getContextPath() + "/");
-        }
+    private User toSessionUser(User source) {
+        User sessionUser = new User();
+        sessionUser.setId(source.getId());
+        sessionUser.setCIN(source.getCIN());
+        sessionUser.setRole(source.getRole());
+        sessionUser.setNom(source.getNom());
+        sessionUser.setPrenom(source.getPrenom());
+        sessionUser.setEmail(source.getEmail());
+        sessionUser.setTelephone(source.getTelephone());
+        sessionUser.setMotDePasse(source.getMotDePasse());
+        return sessionUser;
     }
 
     private void registerPatient(HttpServletRequest req, HttpServletResponse resp) throws IOException {

@@ -3,25 +3,28 @@ package com.jee.servlet;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.jee.ejb.interfaces.PatientServiceLocal;
 import com.jee.entity.CertificatMedical;
 import com.jee.entity.Medecin;
-import com.jee.entity.RendezVous;
 import com.jee.rmi.remote.CallbackClient;
 import com.jee.rmi.server.NotificationServiceImpl;
 
 import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/patient")
 public class PatientServlet extends HttpServlet {
@@ -75,7 +78,7 @@ public class PatientServlet extends HttpServlet {
                 case "demandeCertificat" -> forward(req, resp, patientId, "/jsp/patient/certificats-demande.jsp");
                 default -> forward(req, resp, patientId, "/jsp/patient/dashboard.jsp");
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             req.setAttribute("error", e.getMessage());
             forward(req, resp, patientId, "/jsp/patient/dashboard.jsp");
         }
@@ -225,7 +228,7 @@ public class PatientServlet extends HttpServlet {
         try {
             Object id = user.getClass().getMethod("getId").invoke(user);
             return id instanceof Number n ? n.intValue() : null;
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             return null;
         }
     }
@@ -244,7 +247,7 @@ public class PatientServlet extends HttpServlet {
             throws IOException {
 
         int rdvId = Integer.parseInt(req.getParameter("rdvId"));
-        RendezVous rdv = patientService.getRendezVousById(patientId, rdvId);
+        patientService.getRendezVousById(patientId, rdvId);
 
         resp.setContentType("text/calendar;charset=UTF-8");
         resp.setHeader("Content-Disposition",
