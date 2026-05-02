@@ -203,6 +203,7 @@ public class PatientService implements PatientServiceLocal {
         ).getResultList();
     }
 
+    @Override
     public List<String> getAllSpecialites() {
         return em.createQuery(
                 "SELECT DISTINCT m.specialite FROM Medecin m " +

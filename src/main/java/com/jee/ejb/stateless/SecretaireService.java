@@ -1,15 +1,20 @@
 package com.jee.ejb.stateless;
 
-import com.jee.ejb.interfaces.SecretaireServiceLocal;
-import com.jee.entity.*;
-import com.jee.rmi.server.NotificationServiceImpl;
-import jakarta.ejb.Stateless;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+
+import com.jee.ejb.interfaces.SecretaireServiceLocal;
+import com.jee.entity.DevisMateriel;
+import com.jee.entity.Materiel;
+import com.jee.entity.Patient;
+import com.jee.entity.RendezVous;
+import com.jee.entity.Secretaire;
+import com.jee.rmi.server.NotificationServiceImpl;
+
+import jakarta.ejb.Stateless;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @Stateless
 public class SecretaireService implements SecretaireServiceLocal {
@@ -139,12 +144,14 @@ public class SecretaireService implements SecretaireServiceLocal {
         if (hasStatut && !hasDate) return getRendezVousByStatut(statut);
         if (!hasStatut) return getRendezVousByDate(date);
 
+        String statutValue = statut == null ? "" : statut.toUpperCase();
+
         return em.createQuery(
                 "SELECT r FROM RendezVous r JOIN FETCH r.patient JOIN FETCH r.medecin " +
                 "WHERE r.statut = :statut AND r.dateRdv = :date " +
                 "ORDER BY r.heureDebut ASC",
                 RendezVous.class
-        ).setParameter("statut", statut.toUpperCase())
+        ).setParameter("statut", statutValue)
          .setParameter("date", date)
          .getResultList();
     }
@@ -155,7 +162,6 @@ public class SecretaireService implements SecretaireServiceLocal {
         if (rdv == null) {
             throw new IllegalArgumentException("Rendez-vous introuvable.");
         }
-        String ancienStatut = rdv.getStatut();
         rdv.setStatut(statut.toUpperCase());
 
         // Notifier le patient

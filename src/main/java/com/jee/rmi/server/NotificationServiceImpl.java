@@ -1,14 +1,15 @@
 package com.jee.rmi.server;
 
-import com.jee.rmi.remote.CallbackClient;
-import com.jee.rmi.remote.NotificationService;
-
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import com.jee.rmi.remote.CallbackClient;
+import com.jee.rmi.remote.NotificationService;
 
 public class NotificationServiceImpl implements NotificationService {
 
@@ -47,7 +48,11 @@ public class NotificationServiceImpl implements NotificationService {
 
         List<CallbackClient> callbacks = callbacksByPatient.getOrDefault(patientId, Collections.emptyList());
         for (CallbackClient callback : callbacks) {
-            callback.onNotification(message);
+            try {
+                callback.onNotification(message);
+            } catch (RemoteException e) {
+                callbacks.remove(callback);
+            }
         }
     }
 
