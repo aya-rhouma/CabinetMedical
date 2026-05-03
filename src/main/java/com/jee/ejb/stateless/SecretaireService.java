@@ -162,16 +162,24 @@ public class SecretaireService implements SecretaireServiceLocal {
         if (rdv == null) {
             throw new IllegalArgumentException("Rendez-vous introuvable.");
         }
-        rdv.setStatut(statut.toUpperCase());
+        String nouveauStatut = statut == null ? "" : statut.trim().toUpperCase();
+        if (nouveauStatut.isBlank()) {
+            throw new IllegalArgumentException("Le statut est obligatoire.");
+        }
+        String ancienStatut = rdv.getStatut() == null ? "" : rdv.getStatut().trim().toUpperCase();
+        rdv.setStatut(nouveauStatut);
 
-        // Notifier le patient
-        String message = switch (statut.toUpperCase()) {
-            case "CONFIRME"  -> "Votre rendez-vous du " + rdv.getDateRdv() + " a été confirmé.";
-            case "ANNULE"    -> "Votre rendez-vous du " + rdv.getDateRdv() + " a été annulé par la secrétaire.";
-            case "EFFECTUE"  -> "Votre rendez-vous du " + rdv.getDateRdv() + " est marqué comme effectué.";
-            default          -> "Statut de votre rendez-vous mis à jour : " + statut;
-        };
-        notificationService.notifyPatient(rdv.getPatient().getId(), message);
+        if (!nouveauStatut.equals(ancienStatut)) {
+            String message = switch (nouveauStatut) {
+                case "CONFIRME" -> "Le statut de votre rendez-vous du " + rdv.getDateRdv() + " est maintenant: CONFIRME.";
+                case "ANNULE" -> "Le statut de votre rendez-vous du " + rdv.getDateRdv() + " est maintenant: ANNULE.";
+                case "EFFECTUE" -> "Le statut de votre rendez-vous du " + rdv.getDateRdv() + " est maintenant: EFFECTUE.";
+                default -> "Le statut de votre rendez-vous du " + rdv.getDateRdv() +
+                        " a changé de " + (ancienStatut.isBlank() ? "INCONNU" : ancienStatut) +
+                        " vers " + nouveauStatut + ".";
+            };
+            notificationService.notifyPatient(rdv.getPatient().getId(), message);
+        }
 
         return rdv;
     }
